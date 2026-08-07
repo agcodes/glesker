@@ -11,18 +11,7 @@ Une application Angular en TypeScript qui affiche les prévisions météo pour l
 - Design responsive adapté mobile/tablette/desktop
 - Rafraîchissement manuel des données
 
-## Villes couvertes
-
-- Rennes
-- Brest
-- Quimper
-- Lorient
-- Vannes
-- Saint-Brieuc
-- Saint-Malo
-- Fougères
-
-## Technologie utilisée
+## Technologies utilisées
 
 - **Angular 22+** avec architecture standalone components
 - **TypeScript** pour la typage forte

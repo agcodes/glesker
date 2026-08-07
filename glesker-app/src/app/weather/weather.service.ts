@@ -140,7 +140,22 @@ export class WeatherService {
     this.saveCities();
   }
 
-  // Récupérer la météo pour toutes les villes de Bretagne
+  // Obtenir l'historique des précipitations pour une ville spécifique
+  getCityPrecipitationHistory(latitude: number, longitude: number, days: number = 30): Observable<WeatherData> {
+  
+    const params = {
+      latitude,
+      longitude,
+      current_weather: false,
+      past_days: 50,
+      forecast_days: 0,
+      daily: 'precipitation_sum',
+      timezone: 'Europe/Paris'
+    };
+    return this.http.get<WeatherData>(this.apiUrl, { params });
+  }
+
+  // Récupérer la météo pour toutes les villes
   getWeather(): Observable<{ city: string; data: WeatherData }[]> {
     const requests = this.cities.map((city) => {
       const params = {
@@ -149,7 +164,7 @@ export class WeatherService {
         current_weather: true,
         past_days: 7,
         hourly: 'precipitation,rain,showers,precipitation_probability',
-        daily: 'precipitation_sum,rain_sum,showers_sum,precipitation_hours,precipitation_probability_max',
+        daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,precipitation_hours,precipitation_probability_max,weathercode,windspeed_10m_max',
         timezone: 'Europe/Paris',
       };
       return this.http.get<WeatherData>(this.apiUrl, { params }).pipe(
@@ -176,6 +191,12 @@ export class WeatherService {
   // Get all cities
   getCities(): City[] {
     return this.cities;
+  }
+
+
+  // Helper pour formater une date en string
+  private formatDateForApi(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 
   // Decode weather code to description

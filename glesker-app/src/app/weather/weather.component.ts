@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WeatherService } from './weather.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RainHistoryModalComponent } from './rain-history-modal.component';
 
 @Component({
   selector: 'app-weather',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RainHistoryModalComponent],
   templateUrl: './weather.component.html',
   styleUrl: './weather.component.css',
 })
@@ -18,6 +19,13 @@ export class WeatherComponent implements OnInit {
   searchError: string | null = null;
   selectedCity: string | null = null;
   searchQuery: string = '';
+  dayIndexes: Record<string, number> = {};
+  DEFAULT_DAY_INDEX: number = 7;
+  
+  // Historique des précipitations
+  showHistoryModal: boolean = false;
+  selectedCityForHistory: string | null = null;
+  precipitationHistory: { date: string; precipitation: number; cumulative: number }[] = [];
 
   constructor(public weatherService: WeatherService,
     private cdr: ChangeDetectorRef) {}
@@ -97,7 +105,13 @@ export class WeatherComponent implements OnInit {
       next: (data) => {
         this.weatherData = data;
         this.isLoading = false;
-        console.log(data);
+        console.log(data)
+        // Initialiser dayIndexes pour chaque ville à 7
+        this.dayIndexes = {};
+        data.forEach(item => {
+          this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
+        });
+        
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -111,6 +125,62 @@ export class WeatherComponent implements OnInit {
   // Rafraîchir les données
   refresh(): void {
     this.loadWeather();
+  }
+
+  // Gérer l'index des jours
+  incrementDay(cityName: string): void {
+    if (this.dayIndexes[cityName] !== undefined && this.dayIndexes[cityName] < 13) {
+      this.dayIndexes[cityName]++;
+      this.cdr.detectChanges();
+    }
+  }
+
+  decrementDay(cityName: string): void {
+    if (this.dayIndexes[cityName] !== undefined && this.dayIndexes[cityName] > 0) {
+      this.dayIndexes[cityName]--;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // Afficher l'historique des précipitations
+  showPrecipitationHistory(cityName: string): void {
+    const city = this.weatherService.cities.find(c => c.name === cityName);
+    if (city) {
+      this.selectedCityForHistory = cityName;
+      this.weatherService.getCityPrecipitationHistory(city.latitude, city.longitude).subscribe({
+        next: (data) => {
+          this.precipitationHistory = this.calculateCumulativePrecipitation(data.daily);
+          this.showHistoryModal = true;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération de l\'historique:', err);
+          this.searchError = 'Impossible de charger l\'historique.';
+        }
+      });
+    }
+  }
+
+  // Fermer la modale
+  closeHistoryModal(): void {
+    this.showHistoryModal = false;
+    this.precipitationHistory = [];
+    this.selectedCityForHistory = null;
+  }
+
+  // Calculer les précipitations cumulées
+  private calculateCumulativePrecipitation(daily: any): { date: string; precipitation: number; cumulative: number }[] {
+    if (!daily?.precipitation_sum || !daily?.time) return [];
+
+    let cumulative = 0;
+    return daily.time.map((date: string, index: number) => {
+      cumulative += daily.precipitation_sum[index];
+      return {
+        date,
+        precipitation: daily.precipitation_sum[index],
+        cumulative: cumulative
+      };
+    });
   }
 
   // Formater la date
