@@ -1,0 +1,12 @@
+/* Styles personnalisés pour compléter Bootstrap */
+
+/* Icône météo */
+.weather-icon {
+  font-size: 1.5rem;
+}
+
+/* Animation pour le spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
