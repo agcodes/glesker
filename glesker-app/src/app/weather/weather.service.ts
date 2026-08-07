@@ -147,9 +147,24 @@ export class WeatherService {
       latitude,
       longitude,
       current_weather: false,
-      past_days: 50,
+      past_days: 60,
       forecast_days: 0,
       daily: 'precipitation_sum',
+      timezone: 'Europe/Paris'
+    };
+    return this.http.get<WeatherData>(this.apiUrl, { params });
+  }
+
+  // Obtenir l'historique des précipitations pour une ville spécifique
+  getCityTemperatureHistory(latitude: number, longitude: number, days: number = 30): Observable<WeatherData> {
+  
+    const params = {
+      latitude,
+      longitude,
+      current_weather: false,
+      past_days: 60,
+      forecast_days: 0,
+      daily: 'temperature_2m_max,temperature_2m_min',
       timezone: 'Europe/Paris'
     };
     return this.http.get<WeatherData>(this.apiUrl, { params });

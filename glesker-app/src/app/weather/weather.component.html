@@ -1,7 +1,10 @@
 <div class="container py-4">
   <header class="text-center mb-4">
-    <h1 class="display-4">⛅ Météo</h1>
-    <p class="lead text-muted">Prévisions météo en temps réel</p>
+    <h1 class="display-4">
+      <img src="frog-svgrepo-com.svg" alt="Grenouille" style="height: 1.5em; width: 1.5em;" />
+      Météo
+    </h1>
+    <p class="lead text-muted">La pluie et le beau temps</p>
 
     <div class="input-group mb-3 justify-content-center" style="max-width: 400px; margin: 0 auto">
       <input
@@ -85,7 +88,7 @@
           </div>
         </div>
 
-        <div class="display-7 text-center fw-bold text-primary mb-1">Prévisions</div>
+        <div class="display-7 text-center fw-bold text-primary mb-1">Par jour</div>
 
       
         <div class="btn-group btn-group-sm m-2" role="group">
@@ -131,7 +134,7 @@
           </li>
 
           <li class="list-group-item d-flex mb-2 justify-content-between">
-            <span><i class="bi bi-wind me-2"></i>Températures</span>
+            <span><i class="bi bi-thermometer-high me-2"></i>Températures</span>
             <span
               >{{ formatNumber(item.data.daily.temperature_2m_min[dayIndexes[item.city]], 1) }} à
               {{ formatNumber(item.data.daily.temperature_2m_max[dayIndexes[item.city]], 1) }}
@@ -148,29 +151,6 @@
             >
           </li>
 
-          <li
-            class="list-group-item d-flex mb-2 justify-content-between"
-            *ngIf="item.data.daily?.temperature_2m_max?.length"
-          >
-            <span><i class="bi bi-thermometer-high me-2"></i>Max</span>
-            <span>{{
-              formatTemperature(
-                item.data.daily.temperature_2m_max[dayIndexes[item.city] || DEFAULT_DAY_INDEX]
-              )
-            }}</span>
-          </li>
-
-          <li
-            class="list-group-item d-flex mb-2 justify-content-between"
-            *ngIf="item.data.daily?.temperature_2m_min?.length"
-          >
-            <span><i class="bi bi-thermometer-low me-2"></i>Min</span>
-            <span>{{
-              formatTemperature(
-                item.data.daily.temperature_2m_min[dayIndexes[item.city] || DEFAULT_DAY_INDEX]
-              )
-            }}</span>
-          </li>
 
           <li
             class="list-group-item d-flex mb-2 justify-content-between"
@@ -208,7 +188,7 @@
             class="list-group-item d-flex mb-2 justify-content-between"
             *ngIf="item.data.daily?.precipitation_probability_max?.length"
           >
-            <span><i class="bi bi-percent me-2"></i>Risque de pluie</span>
+            <span><i class="bi bi-percent me-2"></i>Probabilité de pluie</span>
             <span
               >{{
                 formatNumber(
