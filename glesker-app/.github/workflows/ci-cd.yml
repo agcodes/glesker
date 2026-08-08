@@ -2,7 +2,7 @@ name: Build, Test & Deploy to OVH
 
 on:
   push:
-    branches: [main, dev]
+    branches: [master]
 
 jobs:
   pipeline:
@@ -40,7 +40,7 @@ jobs:
 
       # Deploiement sur OVH (FTP)
       - name: Deploy to OVH via FTP
-        if: github.ref == 'refs/heads/main'  # ⬅ Condition : déploiement uniquement sur main
+        if: github.ref == 'refs/heads/master'  # ⬅ Condition : déploiement uniquement sur main
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
