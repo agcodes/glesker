@@ -4,7 +4,6 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">{{ item.city }}</h5>
         <div class="d-flex align-items-center gap-2">
-        
             <div class="me-2">
               <button
                 (click)="onRemoveCity(item.city)"
@@ -22,7 +21,7 @@
           {{ formatTemperature(item.data.current_weather?.temperature, item.data.current_weather_units?.temperature) }}
         </div> 
 
-        <div class=" mb-3" >
+        <div class="mb-3" >
           <span class="weather-icon me-3">{{
             weatherService.getWeatherIcon(item.data.current_weather?.weathercode)
           }}</span>
@@ -46,9 +45,9 @@
           {{ formatDate(item.data.current_weather?.time) }}
         </div>
 
-        <div class="display-7 text-center fw-bold text-primary mb-1">Prévisions</div>
+        <div class="display-7 text-center fw-bold text-primary mb-3">Prévisions</div>
 
-        <div class="btn-group btn-group-sm m-2 p-3" role="group">
+        <div class="btn-group btn-group-sm mb-3" role="group">
           <button
             (click)="decrementDay(item.city)"
             class="btn btn-outline-primary"
@@ -168,7 +167,7 @@
 
             <li class="list-group-item mb-3 p-3">
               <div class="mb-3">
-                <span class="fw-bold"><i class="bi bi-calendar-range me-2"></i>Précipitations par jour</span>
+                <span class=""><i class="bi bi-calendar-range me-2"></i>Précipitations par jour</span>
               </div>
               
               <div class="table-responsive mt-2">
@@ -190,6 +189,13 @@
                       <td>{{ formatNumber(item.data.daily?.precipitation_probability_max[i], 0) }}</td>
                     </tr>
                   </tbody>
+                    <tfoot class="p-2">
+                      <tr class="fw-bold">
+                        <td>Total</td>
+                         <td [class.text-danger]="getTotalPrecipitation() < 2">{{ formatNumber(getTotalPrecipitation(), 1) }}</td>
+                        <td colspan="2"></td>
+                      </tr>
+                  </tfoot>
                 </table>
               </div>
             </li>

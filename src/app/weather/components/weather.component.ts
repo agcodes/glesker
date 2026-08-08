@@ -122,6 +122,7 @@ export class WeatherComponent implements OnInit {
 
     this.weatherService.getWeather().subscribe({
       next: (data) => {
+        console.log(data);
         this.weatherData = data;
         this.isLoading = false;
         // Initialiser dayIndexes pour chaque ville à 7
@@ -129,6 +130,7 @@ export class WeatherComponent implements OnInit {
         data.forEach(item => {
           this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
         });
+        console.log("update ui");
         this.cdr.detectChanges();
       },
       error: (err) => {

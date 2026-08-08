@@ -1,7 +1,8 @@
 <div class="container py-4">
   <header class="text-center mb-4">
     <h1 class="display-4 mb-4">
-      <img src="frog-svgrepo-com.svg" alt="Grenouille" class="frog-logo" />
+      <a href="#"><img src="frog-svgrepo-com.svg" alt="Grenouille" class="frog-logo" /></a>
+      
       Météo
     </h1>
 
@@ -10,7 +11,8 @@
         type="text"
         [(ngModel)]="searchQuery"
         (keyup.enter)="searchCity()"
-        placeholder="Rechercher une ville en France..."
+        placeholder="Rechercher une ville"
+        maxlength="255"
         class="form-control"
         [disabled]="isSearching"
       />

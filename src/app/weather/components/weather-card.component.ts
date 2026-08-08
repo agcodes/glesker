@@ -119,6 +119,12 @@ export class WeatherCardComponent {
     }));
   }
 
+  getTotalPrecipitation(): number {
+    if (!this.item?.data?.daily?.precipitation_sum) return 0;
+    return this.item.data.daily.precipitation_sum.reduce((a: number, b: number) => a + b, 0);
+  }
+    
+
   closeHistoryModal(): void {
     this.showHistoryModal = false;
     this.precipitationHistory = [];
