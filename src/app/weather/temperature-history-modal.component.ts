@@ -127,7 +127,7 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
         labels: this.historyData.map(d => d.date),
         datasets: [
           {
-            label: 'Température max',
+            label: 'temp. max',
             data: this.historyData.map(d => d.temperature_max),
             borderColor: '#e81a1a',
             backgroundColor: 'rgba(232, 26, 26, 0.1)',
@@ -137,7 +137,7 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
             pointBackgroundColor: '#e81a1a'
           },
           {
-            label: 'Température min',
+            label: 'temp. min',
             data: this.historyData.map(d => d.temperature_min),
             borderColor: '#1a73e8',
             backgroundColor: 'rgba(26, 115, 232, 0.1)',

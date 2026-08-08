@@ -139,7 +139,7 @@
       class="list-group-item d-flex mb-2 justify-content-between"
       *ngIf="item.data.daily?.precipitation_probability_max?.length"
     >
-      <span><i class="bi bi-percent me-2"></i>Probabilité de pluie</span>
+      <span><i class="bi bi-percent me-2"></i>Probabilité de précipitations</span>
       <span
         >{{
           formatNumber(
@@ -173,7 +173,7 @@
     </li>
 
     <li class="list-group-item mb-3" *ngIf="item.data.daily?.precipitation_sum?.length">
-      <span class="fw-bold"><i class="bi bi-calendar-range me-2"></i>Pluie par jour</span>
+      <span class="fw-bold"><i class="bi bi-calendar-range me-2"></i>Précipitations par jour</span>
       <div class="table-responsive mt-2">
         <table class="table p-2 table-md table-bordered mb-0">
           <thead>
@@ -200,7 +200,7 @@
 </div>
 
 
-  <!-- Modale Historique Pluie -->
+  <!-- Modale Historique Précipitations -->
   <app-rain-history-modal
     [showModal]="showHistoryModal"
     [cityName]="selectedCityForHistory"

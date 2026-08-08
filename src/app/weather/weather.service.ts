@@ -56,7 +56,7 @@ export class WeatherService {
   private readonly STORAGE_KEY = 'glesker_saved_cities';
   private readonly MAX_SAVED_CITIES = 4;
 
-  // villes de Bretagne
+  // villes
   cities: City[] = [];
 
   constructor(private http: HttpClient) {
