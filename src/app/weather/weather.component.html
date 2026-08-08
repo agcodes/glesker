@@ -4,7 +4,6 @@
       <img src="frog-svgrepo-com.svg" alt="Grenouille" class="frog-logo" style="height: 1.5em; width: 1.5em; vertical-align: -0.25em;" />
       Météo
     </h1>
-    <p class="lead mb-3">La pluie et le beau temps</p>
 
     <div class="input-group mb-3 justify-content-center" style="max-width: 400px; margin: 0 auto">
       <input
@@ -62,7 +61,7 @@
 
   <div
     *ngIf="!isLoading && weatherData.length > 0"
-    class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-3 mt-2"
+    class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-3"
   >
     <div *ngFor="let item of weatherData" class="col">
       <app-weather-card

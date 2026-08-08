@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div class="display-7 text-center fw-bold text-primary mb-1">Par jour</div>
+  <div class="display-7 text-center fw-bold text-primary mb-1">Prévisions</div>
 
   <div class="btn-group btn-group-sm m-2" role="group">
     <button
@@ -181,7 +181,7 @@
               <th>Date</th>
               <th>mm</th>
               <th>nombre d'heures</th>
-              <th>%</th>
+              <th>% probabilité</th>
             </tr>
           </thead>
           <tbody class="p-2">
@@ -190,7 +190,7 @@
               <td>{{ day | date: 'dd/MM' }}</td>
               <td>{{ formatNumber(item.data.daily?.precipitation_sum[i], 1) }}</td>
               <td>{{ formatNumber(item.data.daily?.precipitation_hours[i], 0) }}</td>
-              <td>{{ formatNumber(item.data.daily?.precipitation_probability_max[i], 1) }}</td>
+              <td>{{ formatNumber(item.data.daily?.precipitation_probability_max[i], 0) }}</td>
             </tr>
           </tbody>
         </table>

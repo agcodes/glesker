@@ -48,7 +48,7 @@ export class WeatherComponent implements OnInit {
         },
         (error) => {
           console.log("Géolocalisation refusée ou non disponible:", error);
-          this.loadWeather(); // Charger sans la localisation
+          this.loadWeather();
         }
       );
     } else {
