@@ -1,10 +1,10 @@
 <div class="container py-4">
   <header class="text-center mb-4">
     <h1 class="display-4">
-      <img src="frog-svgrepo-com.svg" alt="Grenouille" style="height: 1.5em; width: 1.5em;" />
+      <img src="frog-svgrepo-com.svg" alt="Grenouille" class="frog-logo" style="height: 1.5em; width: 1.5em; vertical-align: -0.25em;" />
       Météo
     </h1>
-    <p class="lead text-muted">La pluie et le beau temps</p>
+    <p class="lead">La pluie et le beau temps</p>
 
     <div class="input-group mb-3 justify-content-center" style="max-width: 400px; margin: 0 auto">
       <input
@@ -26,12 +26,22 @@
       <button type="button" class="btn-close" (click)="searchError = null"></button>
     </div>
 
-    <button (click)="refresh()" class="btn btn-outline-secondary" [disabled]="isLoading">
-      <span *ngIf="!isLoading"><i class="bi bi-arrow-clockwise"></i> Rafraîchir</span>
-      <span *ngIf="isLoading"
-        ><span class="spinner-border spinner-border-sm me-2"></span>Chargement...</span
-      >
-    </button>
+    <div class="d-flex justify-content-center gap-2 mb-3">
+      <button (click)="refresh()" class="btn btn-outline-secondary" [disabled]="isLoading">
+        <span *ngIf="!isLoading"><i class="bi bi-arrow-clockwise"></i> Rafraîchir</span>
+        <span *ngIf="isLoading"
+          ><span class="spinner-border spinner-border-sm me-2"></span>Chargement...</span
+        >
+      </button>
+
+      <button (click)="themeService.toggleTheme()" class="btn btn-outline-secondary" title="Changer de thème">
+        @if (themeService.theme() === 'light') {
+          <i class="bi bi-moon-fill"></i>
+        } @else {
+          <i class="bi bi-sun-fill"></i>
+        }
+      </button>
+    </div>
   </header>
 
   <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -75,7 +85,7 @@
           <div class="display-6 fw-bold text-primary mb-3">
             {{ formatTemperature(item.data.current_weather?.temperature) }}
           </div>
-          <div class="text-muted mb-3">
+          <div class=" mb-3">
             <span class="h4 weather-icon">{{
               weatherService.getWeatherIcon(item.data.current_weather.weathercode)
             }}</span>

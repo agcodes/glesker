@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WeatherService } from './weather.service';
+import { ThemeService } from '../theme.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RainHistoryModalComponent } from './rain-history-modal.component';
@@ -27,8 +28,11 @@ export class WeatherComponent implements OnInit {
   selectedCityForHistory: string | null = null;
   precipitationHistory: { date: string; precipitation: number; cumulative: number }[] = [];
 
-  constructor(public weatherService: WeatherService,
-    private cdr: ChangeDetectorRef) {}
+  constructor(
+    public weatherService: WeatherService,
+    public themeService: ThemeService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.getLocationThenLoadWeather();
