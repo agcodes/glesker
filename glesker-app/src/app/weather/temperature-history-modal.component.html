@@ -1,21 +1,19 @@
 @if (showModal) {
-  <div class="modal" style="display: block; background: rgba(0,0,0,0.5);" (click)="closeModal()">
+  <div class="modal" style="display: block;" (click)="closeModal()">
     <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            <i class="bi bi-graph-up me-2"></i>
-            Précipitations - {{ cityName }}
+            <i class="bi bi-thermometer-half me-2"></i>
+            Températures - {{ cityName }}
           </h5>
           <button type="button" class="btn-close" (click)="closeModal()"></button>
         </div>
         
         <div class="modal-body">
-
           <div class="chart-container my-3" style="height: 300px;">
             <canvas #chartCanvas></canvas>
           </div>
-          
         </div>
         
         <div class="modal-footer">

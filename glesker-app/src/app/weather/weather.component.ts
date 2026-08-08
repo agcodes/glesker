@@ -3,12 +3,13 @@ import { WeatherService } from './weather.service';
 import { ThemeService } from '../theme.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RainHistoryModalComponent } from './rain-history-modal.component';
+import { WeatherCardComponent } from './weather-card.component';
+import { WeatherUtils } from './weather-utils';
 
 @Component({
   selector: 'app-weather',
   standalone: true,
-  imports: [CommonModule, FormsModule, RainHistoryModalComponent],
+  imports: [CommonModule, FormsModule, WeatherCardComponent],
   templateUrl: './weather.component.html',
   styleUrl: './weather.component.css',
 })
@@ -23,11 +24,6 @@ export class WeatherComponent implements OnInit {
   dayIndexes: Record<string, number> = {};
   DEFAULT_DAY_INDEX: number = 7;
   
-  // Historique des précipitations
-  showHistoryModal: boolean = false;
-  selectedCityForHistory: string | null = null;
-  precipitationHistory: { date: string; precipitation: number; cumulative: number }[] = [];
-
   constructor(
     public weatherService: WeatherService,
     public themeService: ThemeService,
@@ -131,96 +127,15 @@ export class WeatherComponent implements OnInit {
     this.loadWeather();
   }
 
-  // Gérer l'index des jours
-  incrementDay(cityName: string): void {
-    if (this.dayIndexes[cityName] !== undefined && this.dayIndexes[cityName] < 13) {
-      this.dayIndexes[cityName]++;
-      this.cdr.detectChanges();
-    }
+  // Mettre à jour l'index du jour
+  updateDayIndex(event: { city: string; newIndex: number }): void {
+    this.dayIndexes[event.city] = event.newIndex;
+    this.cdr.detectChanges();
   }
 
-  decrementDay(cityName: string): void {
-    if (this.dayIndexes[cityName] !== undefined && this.dayIndexes[cityName] > 0) {
-      this.dayIndexes[cityName]--;
-      this.cdr.detectChanges();
-    }
-  }
-
-  // Afficher l'historique des précipitations
-  showPrecipitationHistory(cityName: string): void {
-    const city = this.weatherService.cities.find(c => c.name === cityName);
-    if (city) {
-      this.selectedCityForHistory = cityName;
-      this.weatherService.getCityPrecipitationHistory(city.latitude, city.longitude).subscribe({
-        next: (data) => {
-          this.precipitationHistory = this.calculateCumulativePrecipitation(data.daily);
-          this.showHistoryModal = true;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Erreur lors de la récupération de l\'historique:', err);
-          this.searchError = 'Impossible de charger l\'historique.';
-        }
-      });
-    }
-  }
-
-  // Fermer la modale
-  closeHistoryModal(): void {
-    this.showHistoryModal = false;
-    this.precipitationHistory = [];
-    this.selectedCityForHistory = null;
-  }
-
-  // Calculer les précipitations cumulées
-  private calculateCumulativePrecipitation(daily: any): { date: string; precipitation: number; cumulative: number }[] {
-    if (!daily?.precipitation_sum || !daily?.time) return [];
-
-    let cumulative = 0;
-    return daily.time.map((date: string, index: number) => {
-      cumulative += daily.precipitation_sum[index];
-      return {
-        date,
-        precipitation: daily.precipitation_sum[index],
-        cumulative: cumulative
-      };
-    });
-  }
-
-  // Formater la date
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
-
-  // Formater la température
-  formatTemperature(temp: number): string {
-    return `${Math.round(temp * 10) / 10}°C`;
-  }
-
-  // Obtenir la direction du vent
-  getWindDirection(degrees: number): string {
-    const directions = [
-      'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-      'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO',
-    ];
-    const index = Math.round(degrees / 22.5) % 16;
-    return directions[index];
-  }
-
-  // Formater un nombre avec un nombre de décimales
-  formatNumber(value: any, decimals: number = 1): string {
-    if (value == null) return '0';
-    const num = parseFloat(value);
-    if (isNaN(num)) return '0';
-    const multiplier = Math.pow(10, decimals);
-    const rounded = Math.round(num * multiplier) / multiplier;
-    return decimals === 0 ? rounded.toFixed(0) : rounded.toFixed(decimals);
-  }
+  // Méthodes de formatage délégées à WeatherUtils
+  formatDate = WeatherUtils.formatDate;
+  formatTemperature = WeatherUtils.formatTemperature;
+  getWindDirection = WeatherUtils.getWindDirection;
+  formatNumber = WeatherUtils.formatNumber;
 }

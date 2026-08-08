@@ -148,7 +148,7 @@ export class WeatherService {
       longitude,
       current_weather: false,
       past_days: 60,
-      forecast_days: 0,
+      forecast_days: 5,
       daily: 'precipitation_sum',
       timezone: 'Europe/Paris'
     };
@@ -162,8 +162,8 @@ export class WeatherService {
       latitude,
       longitude,
       current_weather: false,
-      past_days: 60,
-      forecast_days: 0,
+      past_days: 30,
+      forecast_days: 5,
       daily: 'temperature_2m_max,temperature_2m_min',
       timezone: 'Europe/Paris'
     };

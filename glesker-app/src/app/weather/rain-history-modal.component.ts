@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
+import { WeatherUtils } from './weather-utils';
 
 Chart.register(...registerables);
 
@@ -50,6 +51,9 @@ export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
   closeModal(): void {
     this.modalClosed.emit();
   }
+
+  // Méthode de formatage délégée à WeatherUtils
+  formatNumber = WeatherUtils.formatNumber;
 
   private createChart(): void {
     if (!this.chartCanvas || !this.historyData.length) {
@@ -138,13 +142,5 @@ export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
     });
   }
 
-  // Formater un nombre avec un nombre de décimales
-  formatNumber(value: any, decimals: number = 1): string {
-    if (value == null) return '0';
-    const num = parseFloat(value);
-    if (isNaN(num)) return '0';
-    const multiplier = Math.pow(10, decimals);
-    const rounded = Math.round(num * multiplier) / multiplier;
-    return decimals === 0 ? rounded.toFixed(0) : rounded.toFixed(decimals);
-  }
+
 }
