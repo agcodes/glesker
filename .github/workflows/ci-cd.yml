@@ -47,5 +47,5 @@ jobs:
           port: 21
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./glesker-app/dist/glesker-app
+          local-dir: ./dist/
           server-dir: /glesker/
