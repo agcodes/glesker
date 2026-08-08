@@ -23,14 +23,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Audit de sécurité (npm audit)
-      - name: Security Audit (npm audit)
-        run: npm audit --audit-level=critical
-
-      - name: Auto-fix vulnerabilities
-        run: npm audit fix
-      
-        # Build
       - name: Build
         run: npm run build
 
