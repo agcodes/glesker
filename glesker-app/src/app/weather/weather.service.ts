@@ -157,7 +157,6 @@ export class WeatherService {
 
   // Obtenir l'historique des précipitations pour une ville spécifique
   getCityTemperatureHistory(latitude: number, longitude: number, days: number = 30): Observable<WeatherData> {
-  
     const params = {
       latitude,
       longitude,

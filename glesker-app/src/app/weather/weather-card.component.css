@@ -4,10 +4,6 @@
   animation: fadeInUp 0.5s ease-out;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-}
 
 /* Animation d'apparition */
 @keyframes fadeInUp {
@@ -23,4 +19,14 @@
 
 .weather-icon {
   font-size: 1.5rem;
+}
+
+/* Mise en valeur de la date du jour dans le tableau */
+.today-row {
+  background-color: rgba(153, 168, 190, 0.1) !important;
+  font-weight: bold;
+}
+
+.today-row {
+  border-left: 3px solid #0d6efd;
 }

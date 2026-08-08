@@ -15,6 +15,7 @@ Chart.register(...registerables);
 export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
   @Input() cityName: string = '';
   @Input() historyData: { date: string; precipitation: number; cumulative: number }[] = [];
+  @Input() isLoading: boolean = false;
   
   @Output() modalClosed = new EventEmitter<void>();
   

@@ -16,6 +16,7 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
   @Input() historyData: { date: string; 
     temperature_max: number; 
     temperature_min: number }[] = [];
+  @Input() isLoading: boolean = false;
   
   private todayDate: string = new Date().toISOString().split('T')[0];
 
@@ -162,7 +163,7 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
           tooltip: {
             callbacks: {
               label: (context) => {
-                return `${context.dataset.label}: ${context.raw}°C`;
+                return `${context.dataset.label}: ${context.raw}`;
               }
             }
           }
@@ -182,7 +183,7 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
             beginAtZero: false,
             title: {
               display: true,
-              text: 'Température (°C)'
+              text: 'Température'
             }
           }
         }

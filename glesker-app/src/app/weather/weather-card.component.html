@@ -1,4 +1,4 @@
-<div *ngIf="item" class="card h-100 shadow-sm">
+<div *ngIf="item" class="card h-100 p-3 shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">{{ item.city }}</h5>
     <div class="d-flex align-items-center gap-2">
@@ -15,14 +15,23 @@
   </div>
 
   <div class="card-body text-center">
-    <div class="display-6 fw-bold text-primary mb-3">
-      {{ formatTemperature(item.data.current_weather?.temperature) }}
+    <div class="display-6 fw-bold mb-3" [style.color]="getTemperatureColor(item.data.current_weather?.temperature)">
+      {{ formatTemperature(item.data.current_weather?.temperature, item.data.current_weather_units?.temperature) }}
     </div>
     <div class=" mb-3">
       <span class="h4 weather-icon">{{
         weatherService.getWeatherIcon(item.data.current_weather?.weathercode)
       }}</span>
       {{ weatherService.getWeatherDescription(item.data.current_weather?.weathercode) }}
+
+
+      <span> <i class="bi bi-wind me-2 ml-2"></i></span>    
+      <span
+        >{{
+          formatNumber(item.data.current_weather?.windspeed, 1)
+        }}
+        {{ item.data.current_weather_units?.windspeed }}</span
+      >
     </div>
 
     <div class="small text-secondary">
@@ -73,6 +82,7 @@
           item.data.daily?.weathercode[dayIndex]
         )
       }}
+      
     </li>
 
     <li class="list-group-item d-flex mb-2 justify-content-between">
@@ -89,7 +99,7 @@
         >{{
           formatNumber(item.data.daily?.windspeed_10m_max[dayIndex], 1)
         }}
-        km/h</span
+        {{ item.data.daily_units?.windspeed_10m_max }} </span
       >
     </li>
 
@@ -97,7 +107,7 @@
       class="list-group-item d-flex mb-2 justify-content-between"
       *ngIf="item.data.daily?.precipitation_sum?.length"
     >
-      <span><i class="bi bi-cloud-rain me-2"></i>Pluie</span>
+      <span><i class="bi bi-cloud-rain me-2"></i>Précipitations</span>
       <span
         >{{
           formatNumber(
@@ -105,7 +115,7 @@
             1
           )
         }}
-        mm</span
+        {{ item.data.daily_units?.precipitation_sum }}</span
       >
     </li>
 
@@ -121,7 +131,7 @@
             1
           )
         }}
-        mm</span
+        {{ item.data.daily_units?.showers_sum }}</span
       >
     </li>
 
@@ -151,7 +161,7 @@
         class="btn btn-sm btn-outline-info"
         title="Historique des précipitations"
       >
-        <i class="bi bi-graph-up"></i> Pluie
+        <i class="bi bi-graph-up"></i> Précipitations
       </button>
       <button
         (click)="showTemperatureHistory(item.city)"
@@ -169,14 +179,17 @@
           <thead>
             <tr>
               <th>Date</th>
-              <th>Pluie (mm)</th>
+              <th>mm</th>
+              <th>nombre d'heures</th>
               <th>%</th>
             </tr>
           </thead>
           <tbody class="p-2">
-            <tr *ngFor="let day of item.data.daily?.time; let i = index">
+            <tr *ngFor="let day of item.data.daily?.time; let i = index"
+                [class.today-row]="day === todayDate">
               <td>{{ day | date: 'dd/MM' }}</td>
               <td>{{ formatNumber(item.data.daily?.precipitation_sum[i], 1) }}</td>
+              <td>{{ formatNumber(item.data.daily?.precipitation_hours[i], 0) }}</td>
               <td>{{ formatNumber(item.data.daily?.precipitation_probability_max[i], 1) }}</td>
             </tr>
           </tbody>
@@ -192,6 +205,7 @@
     [showModal]="showHistoryModal"
     [cityName]="selectedCityForHistory"
     [historyData]="precipitationHistory"
+    [isLoading]="isLoadingPrecipitationHistory"
     (modalClosed)="closeHistoryModal()">
   </app-rain-history-modal>
 
@@ -200,5 +214,6 @@
     [showModal]="showTemperatureHistoryModal"
     [cityName]="selectedCityForHistory"
     [historyData]="temperatureHistory"
+    [isLoading]="isLoadingTemperatureHistory"
     (modalClosed)="closeTemperatureHistoryModal()">
   </app-temperature-history-modal>

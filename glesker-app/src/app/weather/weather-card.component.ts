@@ -17,11 +17,15 @@ export class WeatherCardComponent {
   @Input() dayIndex: number = 7;
   @Input() defaultDayIndex: number = 7;
 
+  todayDate: string = new Date().toISOString().split('T')[0];
+
   @Output() removeCity = new EventEmitter<string>();
   @Output() dayIndexChange = new EventEmitter<{ city: string; newIndex: number }>();
 
   showHistoryModal: boolean = false;
   showTemperatureHistoryModal: boolean = false;
+  isLoadingPrecipitationHistory: boolean = false;
+  isLoadingTemperatureHistory: boolean = false;
   selectedCityForHistory: string = '';
   precipitationHistory: { date: string; precipitation: number; cumulative: number }[] = [];
   temperatureHistory: { date: string; temperature_min: number; temperature_max: number }[] = [];
@@ -35,6 +39,7 @@ export class WeatherCardComponent {
   formatTemperature = WeatherUtils.formatTemperature;
   formatDate = WeatherUtils.formatDate;
   formatNumber = WeatherUtils.formatNumber;
+  getTemperatureColor = WeatherUtils.getTemperatureColor;
 
   onRemoveCity(city: string): void {
     this.removeCity.emit(city);
@@ -58,14 +63,21 @@ export class WeatherCardComponent {
     const city = this.weatherService.cities.find(c => c.name === cityName);
     if (city) {
       this.selectedCityForHistory = cityName;
+      this.isLoadingPrecipitationHistory = true;
+      this.showHistoryModal = true;
+      this.cdr.detectChanges();
+
       this.weatherService.getCityPrecipitationHistory(city.latitude, city.longitude).subscribe({
         next: (data) => {
           this.precipitationHistory = WeatherUtils.calculateCumulativePrecipitation(data.daily);
-          this.showHistoryModal = true;
+          this.isLoadingPrecipitationHistory = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Erreur lors de la récupération de l\'historique:', err);
+          this.isLoadingPrecipitationHistory = false;
+          this.showHistoryModal = false;
+          this.cdr.detectChanges();
         }
       });
     }
@@ -75,14 +87,21 @@ export class WeatherCardComponent {
     const city = this.weatherService.cities.find(c => c.name === cityName);
     if (city) {
       this.selectedCityForHistory = cityName;
+      this.isLoadingTemperatureHistory = true;
+      this.showTemperatureHistoryModal = true;
+      this.cdr.detectChanges();
+
       this.weatherService.getCityTemperatureHistory(city.latitude, city.longitude).subscribe({
         next: (data) => {
           this.temperatureHistory = this.calculateTemperatureHistory(data.daily);
-          this.showTemperatureHistoryModal = true;
+          this.isLoadingTemperatureHistory = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Erreur lors de la récupération de l\'historique des températures:', err);
+          this.isLoadingTemperatureHistory = false;
+          this.showTemperatureHistoryModal = false;
+          this.cdr.detectChanges();
         }
       });
     }
@@ -104,11 +123,13 @@ export class WeatherCardComponent {
     this.showHistoryModal = false;
     this.precipitationHistory = [];
     this.selectedCityForHistory = '';
+    this.isLoadingPrecipitationHistory = false;
   }
 
   closeTemperatureHistoryModal(): void {
     this.showTemperatureHistoryModal = false;
     this.temperatureHistory = [];
     this.selectedCityForHistory = '';
+    this.isLoadingTemperatureHistory = false;
   }
 }
