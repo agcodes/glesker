@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
-import { WeatherUtils } from './weather-utils';
+import { WeatherUtils } from '../utils/weather-utils';
 
 Chart.register(...registerables);
 

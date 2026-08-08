@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { WeatherService } from './weather.service';
+import { WeatherService } from '../services/weather.service';
 import { CommonModule } from '@angular/common';
-import { WeatherUtils } from './weather-utils';
+import { WeatherUtils } from '../utils/weather-utils';
 import { RainHistoryModalComponent } from './rain-history-modal.component';
 import { TemperatureHistoryModalComponent } from './temperature-history-modal.component';
 

@@ -1,4 +1,4 @@
-import { WeatherUtils } from './weather-utils';
+import { WeatherUtils } from './utils/weather-utils';
 
 describe('WeatherUtils', () => {
   describe('formatDate', () => {

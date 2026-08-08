@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { WeatherService } from './weather.service';
+import { WeatherService } from './services/weather.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
@@ -85,7 +85,7 @@ describe('WeatherService', () => {
       
       const cities = service.getCities();
       expect(cities).toHaveLength(4);
-      expect(cities.map(c => c.name)).toEqual(['City1', 'City2', 'City3', 'City4']);
+      expect(cities.map((c: { name: string }) => c.name)).toEqual(['City1', 'City2', 'City3', 'City4']);
     });
   });
 
@@ -211,7 +211,7 @@ describe('WeatherService', () => {
         },
       ];
 
-      service.searchCity(mockCityName).subscribe((response) => {
+      service.searchCity(mockCityName).subscribe((response: any) => {
         expect(response).toEqual(mockResponse);
       });
 
@@ -239,7 +239,7 @@ describe('WeatherService', () => {
         },
       };
 
-      service.getWeatherByCoordinates(lat, lon).subscribe((response) => {
+      service.getWeatherByCoordinates(lat, lon).subscribe((response: any) => {
         expect(response.current_weather.temperature).toBe(15);
       });
 

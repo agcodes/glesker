@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { WeatherService } from './weather.service';
-import { ThemeService } from '../theme.service';
+import { WeatherService } from '../services/weather.service';
+import { ThemeService } from '../../theme.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeatherCardComponent } from './weather-card.component';
-import { WeatherUtils } from './weather-utils';
+import { WeatherUtils } from '../utils/weather-utils';
 
 @Component({
   selector: 'app-weather',
@@ -16,10 +16,10 @@ import { WeatherUtils } from './weather-utils';
 export class WeatherComponent implements OnInit {
   weatherData: { city: string; data: any }[] = [];
   isLoading: boolean = true;
+  noCity: boolean = true;
   isSearching: boolean = false;
   error: string | null = null;
   searchError: string | null = null;
-  selectedCity: string | null = null;
   searchQuery: string = '';
   dayIndexes: Record<string, number> = {};
   DEFAULT_DAY_INDEX: number = 7;
@@ -36,23 +36,32 @@ export class WeatherComponent implements OnInit {
 
   // Demander la géolocalisation puis charger la météo
   getLocationThenLoadWeather(): void {
-    if (navigator.geolocation) {
+     this.loadWeather();
+  }
+
+  searchPosition() : void {
+    this.isSearching = true;
+     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Ajouter la localisation actuelle
+          // add current location
           this.weatherService.addCurrentLocation(
             position.coords.latitude,
             position.coords.longitude
           );
+          this.isSearching = false;
+
+          // load weather
           this.loadWeather();
         },
         (error) => {
-          console.log("Géolocalisation refusée ou non disponible:", error);
-          this.loadWeather();
+          this.searchError = "Géolocalisation refusée ou non disponible"; 
+          this.isSearching = false;
         }
       );
     } else {
-      this.loadWeather(); // Navigateur ne supporte pas la géolocalisation
+        this.isSearching = false;
+        this.searchError = 'Position non disponible';
     }
   }
 
@@ -64,7 +73,6 @@ export class WeatherComponent implements OnInit {
     this.isSearching = true;
     this.weatherService.searchCity(this.searchQuery).subscribe({
       next: (results) => {
-        console.log(results);
         this.isSearching = false;
         if (results.length > 0) {
           this.searchError = "";
@@ -86,8 +94,7 @@ export class WeatherComponent implements OnInit {
       error: (err) => {
         this.isSearching = false;
         this.searchError = 'Ville non trouvée. Essayez un autre nom.';
-        console.error('Erreur de recherche:', err);
-          this.cdr.detectChanges();
+        this.cdr.detectChanges();
       }
     });
   }
@@ -101,23 +108,35 @@ export class WeatherComponent implements OnInit {
   loadWeather(): void {
     this.isLoading = true;
     this.error = null;
+
+    if (this.weatherService.getCities()?.length == 0){
+      this.isLoading = false;
+      this.weatherData = [];
+      this.dayIndexes = {};
+      this.noCity = true;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.noCity = false;
+
     this.weatherService.getWeather().subscribe({
       next: (data) => {
         this.weatherData = data;
         this.isLoading = false;
-        console.log(data)
         // Initialiser dayIndexes pour chaque ville à 7
         this.dayIndexes = {};
         data.forEach(item => {
           this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
         });
-        
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erreur lors de la récupération des données météo:', err);
         this.error = 'Impossible de récupérer les données météo. Veuillez réessayer plus tard.';
         this.isLoading = false;
+        
+        this.cdr.detectChanges();
       },
     });
   }

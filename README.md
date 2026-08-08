@@ -1,6 +1,6 @@
-# Glesker App - Météo Bretagne
+# Glesker App - Météo
 
-Une application Angular en TypeScript qui affiche les prévisions météo pour les principales villes de Bretagne.
+Une application Angular en TypeScript qui affiche les prévisions météo.
 
 ## Fonctionnalités
 

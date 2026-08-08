@@ -2,51 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-// Interface pour les données météo
-interface WeatherData {
-  latitude: number;
-  longitude: number;
-  current_weather: {
-    temperature: number;
-    windspeed: number;
-    winddirection: number;
-    weathercode: number;
-    time: string;
-  };
-  hourly?: {
-   time: string[];
-    precipitation: number[];
-    rain: number[];
-    showers: number[];
-    precipitation_probability: number[];
-  };
-  daily?: {
-    time: string[];
-    precipitation_sum: number[];
-    rain_sum: number[];
-    showers_sum: number[];
-    precipitation_hours: number[];
-    precipitation_probability_max: number[];
-    temperature_2m_max: number[];
-    temperature_2m_min: number[];
-    weathercode: number[];
-  };
-}
-
-// Interface pour une ville
-interface City {
-  name: string;
-  latitude: number;
-  longitude: number;
-}
-
-// Interface pour les résultats de géocodage (Nominatim)
-interface GeoLocation {
-  display_name: string;
-  lat: string;
-  lon: string;
-}
+import { WeatherData } from '../models/WeatherData';
+import { GeoLocation } from '../models/GeoLocation';
+import { City } from '../models/City';
 
 @Injectable({
   providedIn: 'root',
@@ -78,6 +36,11 @@ export class WeatherService {
 
   // Sauvegarder les villes dans localStorage
   private saveCities(): void {
+    // Limiter à 4 villes maximum
+    if (this.cities.length > this.MAX_SAVED_CITIES) {
+      this.cities = this.cities.slice(0, this.MAX_SAVED_CITIES);
+    }
+    
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.cities));
   }
 
@@ -92,12 +55,9 @@ export class WeatherService {
       ...this.cities
     ];
     
-    // Limiter à 4 villes maximum
-    if (this.cities.length > this.MAX_SAVED_CITIES) {
-      this.cities = this.cities.slice(0, this.MAX_SAVED_CITIES);
-    }
-    
     this.saveCities();
+
+    console.log("saved");
   }
 
   // Rechercher une ville par son nom
@@ -125,11 +85,6 @@ export class WeatherService {
         { name: cityName, latitude, longitude }
       ];
       
-      // Limiter à 4 villes maximum
-      if (this.cities.length > this.MAX_SAVED_CITIES) {
-        this.cities = this.cities.slice(0, this.MAX_SAVED_CITIES);
-      }
-      
       this.saveCities();
     }
   }
@@ -142,7 +97,6 @@ export class WeatherService {
 
   // Obtenir l'historique des précipitations pour une ville spécifique
   getCityPrecipitationHistory(latitude: number, longitude: number, days: number = 30): Observable<WeatherData> {
-  
     const params = {
       latitude,
       longitude,
@@ -206,7 +160,6 @@ export class WeatherService {
   getCities(): City[] {
     return this.cities;
   }
-
 
   // Helper pour formater une date en string
   private formatDateForApi(date: Date): string {

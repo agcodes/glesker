@@ -2,6 +2,7 @@
 
 /* Icône météo */
 .weather-icon {
+  margin-right: 0.5em;
   font-size: 1.5rem;
 }
 
@@ -19,8 +20,13 @@
 }
 
 .frog-logo {
+  height: 1.3em; 
+  width: 1.3em; 
+  vertical-align: -0.35em;
+  margin-right: 0.2em;
   display: inline-block;
   transition: transform 0.3s ease-in-out;
+  animation: frogJump 0.5s ease-out;
 }
 
 .frog-logo:hover {
