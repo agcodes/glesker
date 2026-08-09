@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WeatherData } from '../models/WeatherData';
-import { GeoLocation } from '../models/GeoLocation';
 import { City } from '../models/City';
 
 @Injectable({
@@ -56,21 +55,8 @@ export class WeatherService {
     ];
     
     this.saveCities();
-
-    console.log("saved");
   }
 
-  // Rechercher une ville par son nom
-  searchCity(cityName: string): Observable<GeoLocation[]> {
-    const params = {
-      format: 'json',
-      q: `${cityName}, France`,
-      countrycodes: 'fr',
-      limit: 1
-    };
-    const headers = { 'User-Agent': 'GleskerApp' };
-    return this.http.get<GeoLocation[]>('https://nominatim.openstreetmap.org/search', { params, headers });
-  }
 
   // Ajouter une ville par son nom
   addCityByName(cityName: string, latitude: number, longitude: number): void {

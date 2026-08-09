@@ -1,10 +1,18 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WeatherService } from '../services/weather.service';
+import { MapService } from '../services/map.service';
 import { ThemeService } from '../../theme.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeatherCardComponent } from './weather-card.component';
 import { WeatherUtils } from '../utils/weather-utils';
+import { tap, map, startWith, catchError, of } from 'rxjs';
+
+interface WeatherState {
+  status: 'loading' | 'success' | 'error';
+  data?: { city: string; data: any }[];
+  message?: string;
+}
 
 @Component({
   selector: 'app-weather',
@@ -21,11 +29,14 @@ export class WeatherComponent implements OnInit {
   error: string | null = null;
   searchError: string | null = null;
   searchQuery: string = '';
+  searchResults: any[] = [];
+  showSearchResults: boolean = false;
   dayIndexes: Record<string, number> = {};
   DEFAULT_DAY_INDEX: number = 7;
   
   constructor(
     public weatherService: WeatherService,
+    public mapService: MapService,
     public themeService: ThemeService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -71,20 +82,18 @@ export class WeatherComponent implements OnInit {
 
     this.searchError = "";
     this.isSearching = true;
-    this.weatherService.searchCity(this.searchQuery).subscribe({
+    this.showSearchResults = false;
+    this.mapService.searchCity(this.searchQuery).subscribe({
       next: (results) => {
         this.isSearching = false;
         if (results.length > 0) {
           this.searchError = "";
-          const city = results[0];
-          const cityName = city.display_name.split(',')[0].trim();
-          this.weatherService.addCityByName(
-            cityName,
-            parseFloat(city.lat),
-            parseFloat(city.lon)
-          );
-          this.searchQuery = '';
-          this.loadWeather();
+          this.searchResults = results;
+          if (results.length === 1) {
+            this.selectCity(results[0]);
+          } else {
+            this.showSearchResults = true;
+          }
         }
         else {
           this.searchError = 'Ville non trouvée. Essayez un autre nom.';
@@ -93,14 +102,34 @@ export class WeatherComponent implements OnInit {
       },
       error: (err) => {
         this.isSearching = false;
-        this.searchError = 'Ville non trouvée. Essayez un autre nom.';
+        this.searchError = 'Erreur rencontrée';
         this.cdr.detectChanges();
       }
     });
   }
 
+  // Sélectionner une ville depuis les résultats de recherche
+  selectCity(city: any): void {
+    const cityName = city.display_name.split(',')[0].trim();
+    this.weatherService.addCityByName(
+      cityName,
+      parseFloat(city.lat),
+      parseFloat(city.lon)
+    );
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.showSearchResults = false;
+    this.loadWeather();
+  }
+
+  // Annuler la sélection et cacher les résultats
+  cancelSelection(): void {
+    this.searchResults = [];
+    this.showSearchResults = false;
+    this.searchQuery = '';
+  }
+
   removeCity(city:string): void {
-    console.log("remove", city);
     this.weatherService.removeCity(city);
     this.loadWeather();
   }
@@ -109,7 +138,7 @@ export class WeatherComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    if (this.weatherService.getCities()?.length == 0){
+    if (this.weatherService.getCities()?.length == 0) {
       this.isLoading = false;
       this.weatherData = [];
       this.dayIndexes = {};
@@ -120,26 +149,29 @@ export class WeatherComponent implements OnInit {
 
     this.noCity = false;
 
-    this.weatherService.getWeather().subscribe({
-      next: (data) => {
-        console.log(data);
-        this.weatherData = data;
-        this.isLoading = false;
-        // Initialiser dayIndexes pour chaque ville à 7
+    this.weatherService.getWeather().pipe(
+      tap(data => {
         this.dayIndexes = {};
         data.forEach(item => {
           this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
         });
-        console.log("update ui");
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Erreur lors de la récupération des données météo:', err);
-        this.error = 'Impossible de récupérer les données météo. Veuillez réessayer plus tard.';
+      }),
+      map(data => ({ status: 'success', data } as WeatherState)),
+      startWith({ status: 'loading' } as WeatherState),
+      catchError(err => {
+        return of({
+          status: 'error',
+          message: 'Impossible de récupérer les données météo. Veuillez réessayer plus tard.'
+        } as WeatherState);
+      })
+    ).subscribe((state: WeatherState) => {
+      if (state.status === 'success') {
+        this.weatherData = state.data!;
         this.isLoading = false;
-        
-        this.cdr.detectChanges();
-      },
+      } else if (state.status === 'error') {
+        this.isLoading = false;
+      }
+      this.cdr.detectChanges();
     });
   }
 

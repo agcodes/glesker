@@ -29,6 +29,27 @@
       </button>
     </div>
 
+    @if (showSearchResults && searchResults.length > 0) {
+      <div class="card mt-3 mb-3" style="max-width: 400px; margin: 0 auto;">
+        <div class="card-header">
+          <h5 class="mb-0">Sélectionnez une ville</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+          @for (city of searchResults; track city.place_id) {
+            <li class="list-group-item">
+              <button (click)="selectCity(city)" class="btn btn-link text-decoration-none text-start w-100">
+                <strong>{{ city.display_name.split(',')[0].trim() }}</strong>
+                <small class="text-muted d-block">{{ city.display_name }}</small>
+              </button>
+            </li>
+          }
+        </ul>
+        <div class="card-footer">
+          <button (click)="cancelSelection()" class="btn btn-sm btn-outline-secondary w-100">Annuler</button>
+        </div>
+      </div>
+    }
+
     @if (searchError) {
       <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <i class="bi bi-exclamation-triangle me-2"></i> {{ searchError }}

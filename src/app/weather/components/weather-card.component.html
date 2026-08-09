@@ -21,6 +21,7 @@
           {{ formatTemperature(item.data.current_weather?.temperature, item.data.current_weather_units?.temperature) }}
         </div> 
 
+
         <div class="mb-3" >
           <span class="weather-icon me-3">{{
             weatherService.getWeatherIcon(item.data.current_weather?.weathercode)
@@ -62,7 +63,7 @@
             } @else if (dayIndex === 8) {
               demain
             } @else {
-              {{ item.data.daily?.time[dayIndex || defaultDayIndex] | date: 'dd/MM' }}
+              {{ item.data.daily?.time[dayIndex || defaultDayIndex] | date: 'EEE dd/MM' }}
             }
           </span>
 
