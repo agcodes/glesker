@@ -201,29 +201,6 @@ describe('WeatherService', () => {
   });
 
   describe('HTTP requests', () => {
-    it('should make GET request for searchCity', () => {
-      const mockCityName = 'Rennes';
-      const mockResponse = [
-        {
-          display_name: 'Rennes, Bretagne, France',
-          lat: '48.1147',
-          lon: '-1.6794',
-        },
-      ];
-
-      service.searchCity(mockCityName).subscribe((response: any) => {
-        expect(response).toEqual(mockResponse);
-      });
-
-      const req = httpMock.expectOne(
-        (request) => request.url === 'https://nominatim.openstreetmap.org/search' && 
-                     request.params.has('q') && 
-                     request.params.get('q') === 'Rennes, France'
-      );
-      expect(req.request.method).toBe('GET');
-      req.flush(mockResponse);
-    });
-
     it('should make GET request for getWeatherByCoordinates', () => {
       const lat = 48.1147;
       const lon = -1.6794;

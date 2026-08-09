@@ -68,10 +68,10 @@ export class WeatherUtils {
       const hue = 180 + (250 - 180) * normalized; // 180 → 250
       return `hsl(${hue}, 100%, 50%)`;
     }
-    // Plage 2: 15°C à 50°C → hue 60 à 0
+    // Plage 2: 15°C à 50°C → hue 50 à 0
     else if (temp <= 50) {
-      const normalized = (temp - 15) / 15; // 0 à 1
-      const hue = 50 - 50 * normalized; // 60 → 0
+      const normalized = (temp - 15) / 35; // 0 à 1
+      const hue = 50 - 50 * normalized; // 50 → 0
       return `hsl(${hue}, 100%, 50%)`;
     }
     // Plage 3: > 50°C → hue 0 (rouge)
