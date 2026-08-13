@@ -19,11 +19,10 @@
       <div class="card-body text-center">
         <div class="display-6 fw-bold mb-3" [style.color]="getTemperatureColor(item.data.current_weather?.temperature)">
           {{ formatTemperature(item.data.current_weather?.temperature, item.data.current_weather_units?.temperature) }}
-        </div> 
-
+        </div>
 
         <div class="mb-3" >
-          <span class="weather-icon me-3">{{
+          <span class="weather-icon me-2">{{
             weatherService.getWeatherIcon(item.data.current_weather?.weathercode)
           }}</span>
 
@@ -32,13 +31,13 @@
           </span>
           
 
-          <span> <i class="bi bi-wind me-3"></i></span>   
+          <span> <i class="bi bi-wind me-2"></i></span>   
           <span class="me-2"
             >{{
               formatNumber(item.data.current_weather?.windspeed, 1)
             }}
-            {{ item.data.current_weather_units?.windspeed }}</span
-          >
+            <small>{{ item.data.current_weather_units?.windspeed }}</small>
+          </span>
         </div>
 
         <div class="small mb-3 text-secondary">
