@@ -1,4 +1,14 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 
@@ -9,15 +19,13 @@ Chart.register(...registerables);
   standalone: true,
   imports: [CommonModule],
   templateUrl: './temperature-history-modal.component.html',
-  styleUrl: './temperature-history-modal.component.css'
+  styleUrl: './temperature-history-modal.component.css',
 })
 export class TemperatureHistoryModalComponent implements AfterViewInit, OnChanges {
   @Input() cityName: string = '';
-  @Input() historyData: { date: string; 
-    temperature_max: number; 
-    temperature_min: number }[] = [];
+  @Input() historyData: { date: string; temperature_max: number; temperature_min: number }[] = [];
   @Input() isLoading: boolean = false;
-  
+
   private todayDate: string = new Date().toISOString().split('T')[0];
 
   @Output() modalClosed = new EventEmitter<void>();
@@ -27,7 +35,11 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
     return {
       id: 'verticalLine',
       afterDraw: (chart: any) => {
-        const { ctx, chartArea: { top, bottom, left, right }, scales: { x } } = chart;
+        const {
+          ctx,
+          chartArea: { top, bottom, left, right },
+          scales: { x },
+        } = chart;
         const xPos = x.getPixelForValue(date);
 
         if (xPos === undefined || xPos < left || xPos > right) return;
@@ -47,23 +59,18 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
         ctx.save();
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
-        const label = 'Aujourd\'hui';
+        const label = "Aujourd'hui";
         const textWidth = ctx.measureText(label).width;
 
         // Fond du label
         ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.fillRect(
-          xPos - textWidth / 2 - 8,
-          top - 28,
-          textWidth + 16,
-          20
-        );
+        ctx.fillRect(xPos - textWidth / 2 - 8, top - 28, textWidth + 16, 20);
 
         // Texte
         ctx.fillStyle = '#fff';
         ctx.fillText(label, xPos, top - 15);
         ctx.restore();
-      }
+      },
     };
   }
 
@@ -79,7 +86,7 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
   get showModal(): boolean {
     return this._showModal;
   }
-  
+
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   private chart: Chart | null = null;
 
@@ -124,29 +131,29 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: this.historyData.map(d => d.date),
+        labels: this.historyData.map((d) => d.date),
         datasets: [
           {
             label: 'temp. max',
-            data: this.historyData.map(d => d.temperature_max),
+            data: this.historyData.map((d) => d.temperature_max),
             borderColor: '#e81a1a',
             backgroundColor: 'rgba(232, 26, 26, 0.1)',
             tension: 0.1,
             borderWidth: 2,
             pointRadius: 3,
-            pointBackgroundColor: '#e81a1a'
+            pointBackgroundColor: '#e81a1a',
           },
           {
             label: 'temp. min',
-            data: this.historyData.map(d => d.temperature_min),
+            data: this.historyData.map((d) => d.temperature_min),
             borderColor: '#1a73e8',
             backgroundColor: 'rgba(26, 115, 232, 0.1)',
             tension: 0.1,
             borderWidth: 2,
             pointRadius: 3,
-            pointBackgroundColor: '#1a73e8'
-          }
-        ]
+            pointBackgroundColor: '#1a73e8',
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -164,30 +171,30 @@ export class TemperatureHistoryModalComponent implements AfterViewInit, OnChange
             callbacks: {
               label: (context) => {
                 return `${context.dataset.label}: ${context.raw}`;
-              }
-            }
-          }
+              },
+            },
+          },
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Date'
+              text: 'Date',
             },
             ticks: {
               maxRotation: 190,
-              minRotation: 0
-            }
+              minRotation: 0,
+            },
           },
           y: {
             beginAtZero: false,
             title: {
               display: true,
-              text: 'Température'
-            }
-          }
-        }
-      }
+              text: 'Température',
+            },
+          },
+        },
+      },
     });
   }
 

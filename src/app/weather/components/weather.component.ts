@@ -23,7 +23,7 @@ interface WeatherState {
 })
 export class WeatherComponent implements OnInit {
   private autoRefreshSubscription: Subscription | null = null;
-   private readonly REFRESH_INTERVAL_MS = 1000 * 60 * 30;
+  private readonly REFRESH_INTERVAL_MS = 1000 * 60 * 30;
   weatherData: { city: string; data: any }[] = [];
   isLoading: boolean = true;
   noCity: boolean = true;
@@ -35,18 +35,17 @@ export class WeatherComponent implements OnInit {
   showSearchResults: boolean = false;
   dayIndexes: Record<string, number> = {};
   DEFAULT_DAY_INDEX: number = 7;
-  
+
   constructor(
     public weatherService: WeatherService,
     public mapService: MapService,
     public themeService: ThemeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.getLocationThenLoadWeather();
   }
-
 
   // Ajoute ngOnDestroy pour nettoyer
   ngOnDestroy(): void {
@@ -61,18 +60,17 @@ export class WeatherComponent implements OnInit {
 
   // Ajoute cette méthode
   private startAutoRefresh(): void {
-      this.autoRefreshSubscription = interval(this.REFRESH_INTERVAL_MS)
-        .subscribe(() => {
-        this.loadWeather();
-      });
+    this.autoRefreshSubscription = interval(this.REFRESH_INTERVAL_MS).subscribe(() => {
+      this.loadWeather();
+    });
   }
 
   // Demander la géolocalisation puis charger la météo
   getLocationThenLoadWeather(): void {
-     this.loadWeather();
+    this.loadWeather();
   }
 
-  searchPosition() : void {
+  searchPosition(): void {
     this.isSearching = true;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -80,7 +78,7 @@ export class WeatherComponent implements OnInit {
           // add current location
           this.weatherService.addCurrentLocation(
             position.coords.latitude,
-            position.coords.longitude
+            position.coords.longitude,
           );
           this.isSearching = false;
 
@@ -88,13 +86,13 @@ export class WeatherComponent implements OnInit {
           this.loadWeather();
         },
         (error) => {
-          this.searchError = "Géolocalisation refusée ou non disponible"; 
+          this.searchError = 'Géolocalisation refusée ou non disponible';
           this.isSearching = false;
-        }
+        },
       );
     } else {
-        this.isSearching = false;
-        this.searchError = 'Position non disponible';
+      this.isSearching = false;
+      this.searchError = 'Position non disponible';
     }
   }
 
@@ -102,22 +100,21 @@ export class WeatherComponent implements OnInit {
   searchCity(): void {
     if (!this.searchQuery.trim()) return;
 
-    this.searchError = "";
+    this.searchError = '';
     this.isSearching = true;
     this.showSearchResults = false;
     this.mapService.searchCity(this.searchQuery).subscribe({
       next: (results) => {
         this.isSearching = false;
         if (results.length > 0) {
-          this.searchError = "";
+          this.searchError = '';
           this.searchResults = results;
           if (results.length === 1) {
             this.selectCity(results[0]);
           } else {
             this.showSearchResults = true;
           }
-        }
-        else {
+        } else {
           this.searchError = 'Ville non trouvée. Essayez un autre nom.';
         }
         this.cdr.detectChanges();
@@ -126,18 +123,14 @@ export class WeatherComponent implements OnInit {
         this.isSearching = false;
         this.searchError = 'Erreur rencontrée';
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
   // Sélectionner une ville depuis les résultats de recherche
   selectCity(city: any): void {
     const cityName = city.display_name.split(',')[0].trim();
-    this.weatherService.addCityByName(
-      cityName,
-      parseFloat(city.lat),
-      parseFloat(city.lon)
-    );
+    this.weatherService.addCityByName(cityName, parseFloat(city.lat), parseFloat(city.lon));
     this.searchQuery = '';
     this.searchResults = [];
     this.showSearchResults = false;
@@ -151,7 +144,7 @@ export class WeatherComponent implements OnInit {
     this.searchQuery = '';
   }
 
-  removeCity(city:string): void {
+  removeCity(city: string): void {
     this.weatherService.removeCity(city);
     this.loadWeather();
   }
@@ -173,33 +166,35 @@ export class WeatherComponent implements OnInit {
 
     this.noCity = false;
 
-    this.weatherService.getWeather().pipe(
-      tap(data => {
-        this.dayIndexes = {};
-        data.forEach(item => {
-          this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
-        });
-      }),
-      map(data => ({ status: 'success', data } as WeatherState)),
-      startWith({ status: 'loading' } as WeatherState),
-      catchError(err => {
-        return of({
-          status: 'error',
-          message: 'Impossible de récupérer les données météo. Veuillez réessayer plus tard.'
-        } as WeatherState);
-      })
-    ).subscribe((state: WeatherState) => {
-      //console.log('Weather data:', state.data);
-      this.startAutoRefresh();
-      if (state.status === 'success') {
-        this.weatherData = state.data!;
-        this.isLoading = false;
-      } else if (state.status === 'error') {
-        this.isLoading = false;
-      }
-      this.cdr.detectChanges();
-    });
-
+    this.weatherService
+      .getWeather()
+      .pipe(
+        tap((data) => {
+          this.dayIndexes = {};
+          data.forEach((item) => {
+            this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
+          });
+        }),
+        map((data) => ({ status: 'success', data }) as WeatherState),
+        startWith({ status: 'loading' } as WeatherState),
+        catchError((err) => {
+          return of({
+            status: 'error',
+            message: 'Impossible de récupérer les données météo. Veuillez réessayer plus tard.',
+          } as WeatherState);
+        }),
+      )
+      .subscribe((state: WeatherState) => {
+        //console.log('Weather data:', state.data);
+        this.startAutoRefresh();
+        if (state.status === 'success') {
+          this.weatherData = state.data!;
+          this.isLoading = false;
+        } else if (state.status === 'error') {
+          this.isLoading = false;
+        }
+        this.cdr.detectChanges();
+      });
   }
 
   // Rafraîchir les données

@@ -8,29 +8,43 @@
 
 /* Animation pour le spinner */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Animation de saut de la grenouille */
 @keyframes frogJump {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
-
 
 /* Animation de saut de la grenouille */
 @keyframes frogJumpIn {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
-
 .frog-logo {
-  height: 1.3em; 
-  width: 1.3em; 
+  height: 1.3em;
+  width: 1.3em;
   vertical-align: -0.35em;
   margin-right: 0.2em;
   display: inline-block;

@@ -15,25 +15,30 @@ export class MapService {
     const params = {
       format: 'json',
       q: cityName,
-      limit: 10
+      limit: 10,
     };
     const headers = { 'User-Agent': 'GleskerApp' };
 
-    return this.http.get<any[]>(
-      'https://nominatim.openstreetmap.org/search',
-      { params, headers }
-    ).pipe(
-      map(data => data
-        // Filtre : class = place ET (type = city OU town)
-        .filter(item => item.addresstype === 'town' || item.addresstype === 'city' || item.addresstype === 'village')
-        // Mappe vers le format GeoLocation
-        .map(item => ({
-          display_name: item.display_name,
-          lat: item.lat,
-          lon: item.lon,
-          address: item.address
-        }))
-      )
-    );
+    return this.http
+      .get<any[]>('https://nominatim.openstreetmap.org/search', { params, headers })
+      .pipe(
+        map((data) =>
+          data
+            // Filtre : class = place ET (type = city OU town)
+            .filter(
+              (item) =>
+                item.addresstype === 'town' ||
+                item.addresstype === 'city' ||
+                item.addresstype === 'village',
+            )
+            // Mappe vers le format GeoLocation
+            .map((item) => ({
+              display_name: item.display_name,
+              lat: item.lat,
+              lon: item.lon,
+              address: item.address,
+            })),
+        ),
+      );
   }
 }

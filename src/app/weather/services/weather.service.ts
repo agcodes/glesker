@@ -39,50 +39,45 @@ export class WeatherService {
     if (this.cities.length > this.MAX_SAVED_CITIES) {
       this.cities = this.cities.slice(0, this.MAX_SAVED_CITIES);
     }
-    
+
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.cities));
   }
 
   // Ajouter la localisation actuelle de l'utilisateur
   addCurrentLocation(latitude: number, longitude: number): void {
     // Retirer 'Ma position' si elle existe déjà
-    this.cities = this.cities.filter(c => c.name !== 'Ma position');
-    
+    this.cities = this.cities.filter((c) => c.name !== 'Ma position');
+
     // Ajouter la nouvelle position en première position
-    this.cities = [
-      { name: 'Ma position', latitude, longitude },
-      ...this.cities
-    ];
-    
+    this.cities = [{ name: 'Ma position', latitude, longitude }, ...this.cities];
+
     this.saveCities();
   }
-
 
   // Ajouter une ville par son nom
   addCityByName(cityName: string, latitude: number, longitude: number): void {
     // Vérifier si la ville existe déjà
-    const cityExists = this.cities.some(c => 
-      c.name.toLowerCase() === cityName.toLowerCase()
-    );
-    
+    const cityExists = this.cities.some((c) => c.name.toLowerCase() === cityName.toLowerCase());
+
     if (!cityExists) {
-      this.cities = [
-        ...this.cities,
-        { name: cityName, latitude, longitude }
-      ];
-      
+      this.cities = [...this.cities, { name: cityName, latitude, longitude }];
+
       this.saveCities();
     }
   }
 
   // Supprimer une ville de la collection
   removeCity(cityName: string): void {
-    this.cities = this.cities.filter(c => c.name !== cityName);
+    this.cities = this.cities.filter((c) => c.name !== cityName);
     this.saveCities();
   }
 
   // Obtenir l'historique des précipitations pour une ville spécifique
-  getCityPrecipitationHistory(latitude: number, longitude: number, days: number = 30): Observable<WeatherData> {
+  getCityPrecipitationHistory(
+    latitude: number,
+    longitude: number,
+    days: number = 30,
+  ): Observable<WeatherData> {
     const params = {
       latitude,
       longitude,
@@ -90,13 +85,17 @@ export class WeatherService {
       past_days: 60,
       forecast_days: 5,
       daily: 'precipitation_sum',
-      timezone: 'Europe/Paris'
+      timezone: 'Europe/Paris',
     };
     return this.http.get<WeatherData>(this.apiUrl, { params });
   }
 
   // Obtenir l'historique des précipitations pour une ville spécifique
-  getCityTemperatureHistory(latitude: number, longitude: number, days: number = 30): Observable<WeatherData> {
+  getCityTemperatureHistory(
+    latitude: number,
+    longitude: number,
+    days: number = 30,
+  ): Observable<WeatherData> {
     const params = {
       latitude,
       longitude,
@@ -104,7 +103,7 @@ export class WeatherService {
       past_days: 30,
       forecast_days: 5,
       daily: 'temperature_2m_max,temperature_2m_min',
-      timezone: 'Europe/Paris'
+      timezone: 'Europe/Paris',
     };
     return this.http.get<WeatherData>(this.apiUrl, { params });
   }
@@ -118,12 +117,13 @@ export class WeatherService {
         current_weather: true,
         past_days: 7,
         hourly: 'precipitation,rain,showers,precipitation_probability',
-        daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,precipitation_hours,precipitation_probability_max,weathercode,windspeed_10m_max',
+        daily:
+          'temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,precipitation_hours,precipitation_probability_max,weathercode,windspeed_10m_max',
         timezone: 'Europe/Paris',
       };
-      return this.http.get<WeatherData>(this.apiUrl, { params }).pipe(
-        map((data) => ({ city: city.name, data }))
-      );
+      return this.http
+        .get<WeatherData>(this.apiUrl, { params })
+        .pipe(map((data) => ({ city: city.name, data })));
     });
 
     return forkJoin(requests);

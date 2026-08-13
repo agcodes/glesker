@@ -1,4 +1,14 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { WeatherUtils } from '../utils/weather-utils';
@@ -16,11 +26,11 @@ export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
   @Input() cityName: string = '';
   @Input() historyData: { date: string; precipitation: number; cumulative: number }[] = [];
   @Input() isLoading: boolean = false;
-  
+
   @Output() modalClosed = new EventEmitter<void>();
-  
+
   private _showModal: boolean = false;
-  
+
   @Input()
   set showModal(value: boolean) {
     this._showModal = value;
@@ -31,7 +41,7 @@ export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
   get showModal(): boolean {
     return this._showModal;
   }
-  
+
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   private chart: Chart | null = null;
 
@@ -76,29 +86,29 @@ export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: this.historyData.map(d => d.date),
+        labels: this.historyData.map((d) => d.date),
         datasets: [
           {
             label: 'Précipitations par jour (mm)',
-            data: this.historyData.map(d => d.precipitation),
+            data: this.historyData.map((d) => d.precipitation),
             borderColor: '#1a73e8',
             backgroundColor: 'rgba(26, 115, 232, 0.1)',
             tension: 0.1,
             borderWidth: 2,
             pointRadius: 3,
-            pointBackgroundColor: '#1a73e8'
+            pointBackgroundColor: '#1a73e8',
           },
           {
             label: 'Cumulé (mm)',
-            data: this.historyData.map(d => d.cumulative),
+            data: this.historyData.map((d) => d.cumulative),
             borderColor: '#0f9d58',
             backgroundColor: 'rgba(15, 157, 88, 0.1)',
             tension: 0.1,
             borderWidth: 2,
             pointRadius: 3,
-            pointBackgroundColor: '#0f9d58'
-          }
-        ]
+            pointBackgroundColor: '#0f9d58',
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -116,32 +126,30 @@ export class RainHistoryModalComponent implements AfterViewInit, OnChanges {
             callbacks: {
               label: (context) => {
                 return `${context.dataset.label}: ${context.raw} mm`;
-              }
-            }
-          }
+              },
+            },
+          },
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Date'
+              text: 'Date',
             },
             ticks: {
               maxRotation: 45,
-              minRotation: 45
-            }
+              minRotation: 45,
+            },
           },
           y: {
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Précipitations (mm)'
-            }
-          }
-        }
-      }
+              text: 'Précipitations (mm)',
+            },
+          },
+        },
+      },
     });
   }
-
-
 }

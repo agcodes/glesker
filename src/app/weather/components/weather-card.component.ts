@@ -10,7 +10,7 @@ import { TemperatureHistoryModalComponent } from './temperature-history-modal.co
   standalone: true,
   imports: [CommonModule, RainHistoryModalComponent, TemperatureHistoryModalComponent],
   templateUrl: './weather-card.component.html',
-  styleUrl: './weather-card.component.css'
+  styleUrl: './weather-card.component.css',
 })
 export class WeatherCardComponent {
   @Input() item: { city: string; data: any } | null = null;
@@ -32,7 +32,7 @@ export class WeatherCardComponent {
 
   constructor(
     public weatherService: WeatherService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // Méthodes de formatage délégées à WeatherUtils
@@ -60,7 +60,7 @@ export class WeatherCardComponent {
   }
 
   showPrecipitationHistory(cityName: string): void {
-    const city = this.weatherService.cities.find(c => c.name === cityName);
+    const city = this.weatherService.cities.find((c) => c.name === cityName);
     if (city) {
       this.selectedCityForHistory = cityName;
       this.isLoadingPrecipitationHistory = true;
@@ -74,17 +74,17 @@ export class WeatherCardComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Erreur lors de la récupération de l\'historique:', err);
+          console.error("Erreur lors de la récupération de l'historique:", err);
           this.isLoadingPrecipitationHistory = false;
           this.showHistoryModal = false;
           this.cdr.detectChanges();
-        }
+        },
       });
     }
   }
 
   showTemperatureHistory(cityName: string): void {
-    const city = this.weatherService.cities.find(c => c.name === cityName);
+    const city = this.weatherService.cities.find((c) => c.name === cityName);
     if (city) {
       this.selectedCityForHistory = cityName;
       this.isLoadingTemperatureHistory = true;
@@ -98,24 +98,24 @@ export class WeatherCardComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Erreur lors de la récupération de l\'historique des températures:', err);
+          console.error("Erreur lors de la récupération de l'historique des températures:", err);
           this.isLoadingTemperatureHistory = false;
           this.showTemperatureHistoryModal = false;
           this.cdr.detectChanges();
-        }
+        },
       });
     }
   }
 
-  private calculateTemperatureHistory(daily: any): { date: string; 
-    temperature_max: number; 
-    temperature_min: number }[] {
+  private calculateTemperatureHistory(
+    daily: any,
+  ): { date: string; temperature_max: number; temperature_min: number }[] {
     if (!daily?.time || !daily?.temperature_2m_min || !daily?.temperature_2m_max) return [];
 
     return daily.time.map((date: string, index: number) => ({
       date,
       temperature_min: daily.temperature_2m_min[index],
-      temperature_max: daily.temperature_2m_max[index]
+      temperature_max: daily.temperature_2m_max[index],
     }));
   }
 
@@ -123,7 +123,6 @@ export class WeatherCardComponent {
     if (!this.item?.data?.daily?.precipitation_sum) return 0;
     return this.item.data.daily.precipitation_sum.reduce((a: number, b: number) => a + b, 0);
   }
-    
 
   closeHistoryModal(): void {
     this.showHistoryModal = false;
