@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeatherCardComponent } from './weather-card.component';
 import { WeatherUtils } from '../utils/weather-utils';
-import { tap, map, startWith, catchError, of } from 'rxjs';
+import { tap, map, startWith, catchError, of, interval, Subscription } from 'rxjs';
 
 interface WeatherState {
   status: 'loading' | 'success' | 'error';
@@ -22,6 +22,8 @@ interface WeatherState {
   styleUrl: './weather.component.css',
 })
 export class WeatherComponent implements OnInit {
+  private autoRefreshSubscription: Subscription | null = null;
+   private readonly REFRESH_INTERVAL_MS = 1000 * 60 * 30;
   weatherData: { city: string; data: any }[] = [];
   isLoading: boolean = true;
   noCity: boolean = true;
@@ -45,6 +47,26 @@ export class WeatherComponent implements OnInit {
     this.getLocationThenLoadWeather();
   }
 
+
+  // Ajoute ngOnDestroy pour nettoyer
+  ngOnDestroy(): void {
+    this.stopAutoRefresh();
+  }
+
+  private stopAutoRefresh(): void {
+    if (this.autoRefreshSubscription) {
+      this.autoRefreshSubscription.unsubscribe();
+    }
+  }
+
+  // Ajoute cette méthode
+  private startAutoRefresh(): void {
+      this.autoRefreshSubscription = interval(this.REFRESH_INTERVAL_MS)
+        .subscribe(() => {
+        this.loadWeather();
+      });
+  }
+
   // Demander la géolocalisation puis charger la météo
   getLocationThenLoadWeather(): void {
      this.loadWeather();
@@ -52,7 +74,7 @@ export class WeatherComponent implements OnInit {
 
   searchPosition() : void {
     this.isSearching = true;
-     if (navigator.geolocation) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           // add current location
@@ -135,6 +157,8 @@ export class WeatherComponent implements OnInit {
   }
 
   loadWeather(): void {
+    this.stopAutoRefresh();
+
     this.isLoading = true;
     this.error = null;
 
@@ -165,6 +189,8 @@ export class WeatherComponent implements OnInit {
         } as WeatherState);
       })
     ).subscribe((state: WeatherState) => {
+      //console.log('Weather data:', state.data);
+      this.startAutoRefresh();
       if (state.status === 'success') {
         this.weatherData = state.data!;
         this.isLoading = false;
@@ -173,10 +199,12 @@ export class WeatherComponent implements OnInit {
       }
       this.cdr.detectChanges();
     });
+
   }
 
   // Rafraîchir les données
   refresh(): void {
+    this.stopAutoRefresh();
     this.loadWeather();
   }
 

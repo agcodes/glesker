@@ -100,15 +100,17 @@
     </div>
   } @else {
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-3">
-      <div *ngFor="let item of weatherData" class="col">
-        <app-weather-card
-          [item]="item"
-          [dayIndex]="dayIndexes[item.city ?? '']"
-          [defaultDayIndex]="DEFAULT_DAY_INDEX"
-          (removeCity)="removeCity($event)"
-          (dayIndexChange)="updateDayIndex($event)"
-        ></app-weather-card>
-      </div>
+      @for (item of weatherData; track item.city) {
+        <article class="col">
+          <app-weather-card
+            [item]="item"
+            [dayIndex]="dayIndexes[item.city ?? '']"
+            [defaultDayIndex]="DEFAULT_DAY_INDEX"
+            (removeCity)="removeCity($event)"
+            (dayIndexChange)="updateDayIndex($event)"
+          ></app-weather-card>
+        </article>
+      }
     </div>
   }
 
