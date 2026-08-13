@@ -36,7 +36,7 @@
             >{{
               formatNumber(item.data.current_weather?.windspeed, 1)
             }}
-            <small>{{ item.data.current_weather_units?.windspeed }}</small>
+            <span class="small">{{ item.data.current_weather_units?.windspeed }}</span>
           </span>
         </div>
 
@@ -101,7 +101,7 @@
               >{{
                 formatNumber(item.data.daily?.windspeed_10m_max[dayIndex], 1)
               }}
-              {{ item.data.daily_units?.windspeed_10m_max }}</span
+               <span class="small">{{ item.data.daily_units?.windspeed_10m_max }}</span></span
             >
           </li>
 
@@ -115,7 +115,7 @@
                     1
                   )
                 }}
-                {{ item.data.daily_units?.precipitation_sum }}</span
+                 <span class="small">{{ item.data.daily_units?.precipitation_sum }}</span></span
               >
             </li>
 
@@ -128,7 +128,7 @@
                     1
                   )
                 }}
-                {{ item.data.daily_units?.showers_sum }}</span
+                 <span class="small">{{ item.data.daily_units?.showers_sum }}</span></span
               >
             </li>
           }
@@ -144,7 +144,7 @@
                     ],
                     0
                   )
-                }}%</span
+                }}<span class="small">%</span></span
               >
             </li>
 
