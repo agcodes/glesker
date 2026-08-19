@@ -55,6 +55,7 @@ export class WeatherComponent implements OnInit {
   private stopAutoRefresh(): void {
     if (this.autoRefreshSubscription) {
       this.autoRefreshSubscription.unsubscribe();
+      this.autoRefreshSubscription = null;
     }
   }
 

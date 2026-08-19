@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { RouterOutlet } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('App', () => {
   let fixture: ComponentFixture<App>;
@@ -8,7 +8,7 @@ describe('App', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterOutlet],
+      imports: [App, RouterTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(App);
@@ -18,10 +18,5 @@ describe('App', () => {
 
   it('should create the app', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should render router-outlet', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

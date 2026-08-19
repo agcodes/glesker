@@ -83,23 +83,23 @@
         <ul class="list-group">
           <li class="list-group-item d-flex mb-2 justify-content-between p-3">
             <span class="h4 weather-icon">{{
-              weatherService.getWeatherIcon(item.data.daily?.weathercode[dayIndex])
+              weatherService.getWeatherIcon(item.data.daily?.weathercode[dayIndex || defaultDayIndex])
             }}</span>
-            {{ weatherService.getWeatherDescription(item.data.daily?.weathercode[dayIndex]) }}
+            {{ weatherService.getWeatherDescription(item.data.daily?.weathercode[dayIndex || defaultDayIndex]) }}
           </li>
 
           <li class="list-group-item d-flex mb-2 justify-content-between p-3">
             <span><i class="bi bi-thermometer-high me-2"></i>Températures</span>
             <span
-              >{{ formatNumber(item.data.daily?.temperature_2m_min[dayIndex], 1) }} à
-              {{ formatNumber(item.data.daily?.temperature_2m_max[dayIndex], 1) }}
+              >{{ formatNumber(item.data.daily?.temperature_2m_min[dayIndex || defaultDayIndex], 1) }} à
+              {{ formatNumber(item.data.daily?.temperature_2m_max[dayIndex || defaultDayIndex], 1) }}
             </span>
           </li>
 
           <li class="list-group-item d-flex mb-2 justify-content-between p-3">
             <span><i class="bi bi-wind me-2"></i>Vent</span>
             <span
-              >{{ formatNumber(item.data.daily?.windspeed_10m_max[dayIndex], 1) }}
+              >{{ formatNumber(item.data.daily?.windspeed_10m_max[dayIndex || defaultDayIndex], 1) }}
               <span class="small">{{ item.data.daily_units?.windspeed_10m_max }}</span></span
             >
           </li>

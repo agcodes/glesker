@@ -46,10 +46,12 @@ describe('ThemeService', () => {
   });
 
   it('should load saved theme from localStorage', () => {
+    // Set theme in localStorage before service is created
     localStorage.setItem('theme', 'dark');
     
-    // Reset and recreate service
+    // Recreate TestBed with saved theme
     TestBed.resetTestingModule();
+    
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query) => ({
@@ -70,6 +72,7 @@ describe('ThemeService', () => {
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
+    
     service = TestBed.inject(ThemeService);
     
     expect(service.getCurrentTheme()).toBe('dark');
