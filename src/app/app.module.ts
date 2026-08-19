@@ -12,12 +12,12 @@ import { TemperatureHistoryModalComponent } from './weather/components/temperatu
 import { routes } from './app.routes';
 
 @NgModule({
-  declarations: [App],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
     HttpClientModule,
     RouterModule.forRoot(routes),
+    App,
     WeatherComponent,
     WeatherCardComponent,
     RainHistoryModalComponent,
