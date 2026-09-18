@@ -21,7 +21,7 @@ describe('TemperatureHistoryModalComponent', () => {
     fixture = TestBed.createComponent(HistoryTemperatureModalComponent);
     component = fixture.componentInstance;
     component.cityName = 'Rennes';
-    component.historyData = mockHistoryData;
+    component.data = mockHistoryData;
     component.isLoading = false;
     fixture.detectChanges();
   });
@@ -32,7 +32,7 @@ describe('TemperatureHistoryModalComponent', () => {
 
   it('should initialize with default values', () => {
     expect(component.cityName).toBe('Rennes');
-    expect(component.historyData).toEqual(mockHistoryData);
+    expect(component.data).toEqual(mockHistoryData);
     expect(component.isLoading).toBe(false);
     expect(component.showModal).toBe(false);
   });
@@ -48,7 +48,7 @@ describe('TemperatureHistoryModalComponent', () => {
     });
 
     it('should have historyData input', () => {
-      expect(component.historyData).toEqual(mockHistoryData);
+      expect(component.data).toEqual(mockHistoryData);
     });
 
     it('should have isLoading input', () => {
@@ -117,7 +117,7 @@ describe('TemperatureHistoryModalComponent', () => {
   describe('ngAfterViewInit', () => {
     it('should call createChart when showModal is true and historyData exists', () => {
       component['_showModal'] = true;
-      component['historyData'] = mockHistoryData;
+      component['data'] = mockHistoryData;
       const spy = vi.spyOn(component as any, 'createChart');
 
       component.ngAfterViewInit();
@@ -136,7 +136,7 @@ describe('TemperatureHistoryModalComponent', () => {
 
     it('should not call createChart when historyData is empty', () => {
       component['_showModal'] = true;
-      component['historyData'] = [];
+      component['data'] = [];
       const spy = vi.spyOn(component as any, 'createChart');
 
       component.ngAfterViewInit();
