@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RainHistoryModalComponent } from './rain-history-modal.component';
+import { HistoryPrecipitationModalComponent } from './history-precipitation-modal.component';
 import { CommonModule } from '@angular/common';
 import { WeatherUtils } from '../utils/weather-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('RainHistoryModalComponent', () => {
-  let component: RainHistoryModalComponent;
-  let fixture: ComponentFixture<RainHistoryModalComponent>;
+  let component: HistoryPrecipitationModalComponent;
+  let fixture: ComponentFixture<HistoryPrecipitationModalComponent>;
 
   const mockHistoryData = [
     { date: '2024-01-01', precipitation: 10, cumulative: 10 },
@@ -18,7 +19,7 @@ describe('RainHistoryModalComponent', () => {
       imports: [CommonModule],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RainHistoryModalComponent);
+    fixture = TestBed.createComponent(HistoryPrecipitationModalComponent);
     component = fixture.componentInstance;
     component.cityName = 'Rennes';
     component.historyData = mockHistoryData;

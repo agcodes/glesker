@@ -5,7 +5,7 @@ describe('WeatherUtils', () => {
     it('should format valid date string', () => {
       const dateString = '2024-01-15T12:30:00Z';
       const result = WeatherUtils.formatDate(dateString);
-      
+
       expect(result).toContain('15');
       expect(result).toContain('janvier');
       expect(result.length).toBeGreaterThan(0);
@@ -105,14 +105,14 @@ describe('WeatherUtils', () => {
     });
   });
 
-  describe('calculateCumulativePrecipitation', () => {
+  describe('calculateCumulativeHistoryPrecipitation', () => {
     it('should return empty array for missing daily data', () => {
-      const result = WeatherUtils.calculateCumulativePrecipitation({});
+      const result = WeatherUtils.calculateCumulativeHistoryPrecipitation({});
       expect(result).toEqual([]);
     });
 
     it('should return empty array for missing precipitation_sum', () => {
-      const result = WeatherUtils.calculateCumulativePrecipitation({
+      const result = WeatherUtils.calculateCumulativeHistoryPrecipitation({
         time: ['2024-01-01', '2024-01-02'],
       });
       expect(result).toEqual([]);
@@ -123,9 +123,9 @@ describe('WeatherUtils', () => {
         time: ['2024-01-01', '2024-01-02', '2024-01-03'],
         precipitation_sum: [10, 5, 15],
       };
-      
-      const result = WeatherUtils.calculateCumulativePrecipitation(daily);
-      
+
+      const result = WeatherUtils.calculateCumulativeHistoryPrecipitation(daily);
+
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({ date: '2024-01-01', precipitation: 10, cumulative: 10 });
       expect(result[1]).toEqual({ date: '2024-01-02', precipitation: 5, cumulative: 15 });

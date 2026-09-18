@@ -8,7 +8,7 @@ Une application Angular en TypeScript qui affiche les prévisions météo.
 - Température actuelle, description météo, vitesse et direction du vent
 - Prévisions quotidiennes (température max/min)
 - Icônes météo basées sur les codes de l'API
-- Design responsive adapté mobile/tablette/desktop
+- Design responsive adapté mobile/tablette/desktopnm
 - Rafraîchissement manuel des données
 
 ## Technologies utilisées
@@ -42,3 +42,7 @@ Modifiez `src/app/weather/weather.service.ts` pour ajouter/supprimer des villes 
 ## Compatibilité
 
 Tous les navigateurs modernes (Chrome, Firefox, Safari, Edge) et mobile.
+
+## Tests
+
+npm run test

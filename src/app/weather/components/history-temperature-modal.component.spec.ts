@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TemperatureHistoryModalComponent } from './temperature-history-modal.component';
+import { HistoryTemperatureModalComponent } from './history-temperature-modal.component';
 import { CommonModule } from '@angular/common';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('TemperatureHistoryModalComponent', () => {
-  let component: TemperatureHistoryModalComponent;
-  let fixture: ComponentFixture<TemperatureHistoryModalComponent>;
+  let component: HistoryTemperatureModalComponent;
+  let fixture: ComponentFixture<HistoryTemperatureModalComponent>;
 
   const mockHistoryData = [
     { date: '2024-01-01', temperature_max: 15, temperature_min: 10 },
@@ -17,7 +18,7 @@ describe('TemperatureHistoryModalComponent', () => {
       imports: [CommonModule],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TemperatureHistoryModalComponent);
+    fixture = TestBed.createComponent(HistoryTemperatureModalComponent);
     component = fixture.componentInstance;
     component.cityName = 'Rennes';
     component.historyData = mockHistoryData;

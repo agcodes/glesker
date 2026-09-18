@@ -10,10 +10,7 @@ describe('MapService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [
-        MapService,
-        provideHttpClientTesting(),
-      ],
+      providers: [MapService, provideHttpClientTesting()],
     });
 
     service = TestBed.inject(MapService);
@@ -51,8 +48,8 @@ describe('MapService', () => {
         expect(results[0].lon).toBe('-1.6794');
       });
 
-      const req = httpMock.expectOne(
-        (request) => request.urlWithParams.includes('nominatim.openstreetmap.org/search')
+      const req = httpMock.expectOne((request) =>
+        request.urlWithParams.includes('nominatim.openstreetmap.org/search'),
       );
       expect(req.request.method).toBe('GET');
       expect(req.request.params.get('q')).toBe(cityName);
@@ -98,15 +95,15 @@ describe('MapService', () => {
 
       service.searchCity(cityName).subscribe((results) => {
         expect(results).toHaveLength(3);
-        expect(results.map(r => r.display_name)).toEqual([
+        expect(results.map((r) => r.display_name)).toEqual([
           'Paris, France',
           'Paris, Texas, USA',
-          'Paris, Ontario, Canada'
+          'Paris, Ontario, Canada',
         ]);
       });
 
-      const req = httpMock.expectOne(
-        (request) => request.urlWithParams.includes('nominatim.openstreetmap.org/search')
+      const req = httpMock.expectOne((request) =>
+        request.urlWithParams.includes('nominatim.openstreetmap.org/search'),
       );
       req.flush(mockResponse);
     });
@@ -127,8 +124,8 @@ describe('MapService', () => {
         expect(results).toHaveLength(0);
       });
 
-      const req = httpMock.expectOne(
-        (request) => request.urlWithParams.includes('nominatim.openstreetmap.org/search')
+      const req = httpMock.expectOne((request) =>
+        request.urlWithParams.includes('nominatim.openstreetmap.org/search'),
       );
       req.flush(mockResponse);
     });
@@ -141,8 +138,8 @@ describe('MapService', () => {
         expect(results).toHaveLength(0);
       });
 
-      const req = httpMock.expectOne(
-        (request) => request.urlWithParams.includes('nominatim.openstreetmap.org/search')
+      const req = httpMock.expectOne((request) =>
+        request.urlWithParams.includes('nominatim.openstreetmap.org/search'),
       );
       req.flush(mockResponse);
     });
@@ -171,8 +168,8 @@ describe('MapService', () => {
         expect(result.lon).toBe('-4.4891');
       });
 
-      const req = httpMock.expectOne(
-        (request) => request.urlWithParams.includes('nominatim.openstreetmap.org/search')
+      const req = httpMock.expectOne((request) =>
+        request.urlWithParams.includes('nominatim.openstreetmap.org/search'),
       );
       req.flush(mockResponse);
     });

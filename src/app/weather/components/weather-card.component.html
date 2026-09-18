@@ -62,13 +62,7 @@
           </button>
 
           <span class="btn btn-outline-primary px-3" style="cursor: default">
-            @if (dayIndex === 7) {
-              aujourd'hui
-            } @else if (dayIndex === 8) {
-              demain
-            } @else {
-              {{ item.data.daily?.time[dayIndex || defaultDayIndex] | date: 'EEE dd/MM' }}
-            }
+            {{ item.data.daily?.time[dayIndex || defaultDayIndex] | date: 'EEE dd/MM' }}
           </span>
 
           <button
@@ -83,23 +77,45 @@
         <ul class="list-group">
           <li class="list-group-item d-flex mb-2 justify-content-between p-3">
             <span class="h4 weather-icon">{{
-              weatherService.getWeatherIcon(item.data.daily?.weathercode[dayIndex || defaultDayIndex])
+              weatherService.getWeatherIcon(
+                item.data.daily?.weathercode[dayIndex || defaultDayIndex]
+              )
             }}</span>
-            {{ weatherService.getWeatherDescription(item.data.daily?.weathercode[dayIndex || defaultDayIndex]) }}
+            {{
+              weatherService.getWeatherDescription(
+                item.data.daily?.weathercode[dayIndex || defaultDayIndex]
+              )
+            }}
           </li>
 
           <li class="list-group-item d-flex mb-2 justify-content-between p-3">
             <span><i class="bi bi-thermometer-high me-2"></i>Températures</span>
-            <span
-              >{{ formatNumber(item.data.daily?.temperature_2m_min[dayIndex || defaultDayIndex], 1) }} à
-              {{ formatNumber(item.data.daily?.temperature_2m_max[dayIndex || defaultDayIndex], 1) }}
-            </span>
+
+            <button
+              (click)="
+                showHourlyTemperature(item.city, item.data.daily?.time[dayIndex || defaultDayIndex])
+              "
+              class="btn btn-sm btn-outline-secondary"
+              title="Historique des températures"
+            >
+              <span
+                >{{
+                  formatNumber(item.data.daily?.temperature_2m_min[dayIndex || defaultDayIndex], 1)
+                }}
+                à
+                {{
+                  formatNumber(item.data.daily?.temperature_2m_max[dayIndex || defaultDayIndex], 1)
+                }}
+              </span>
+            </button>
           </li>
 
           <li class="list-group-item d-flex mb-2 justify-content-between p-3">
             <span><i class="bi bi-wind me-2"></i>Vent</span>
             <span
-              >{{ formatNumber(item.data.daily?.windspeed_10m_max[dayIndex || defaultDayIndex], 1) }}
+              >{{
+                formatNumber(item.data.daily?.windspeed_10m_max[dayIndex || defaultDayIndex], 1)
+              }}
               <span class="small">{{ item.data.daily_units?.windspeed_10m_max }}</span></span
             >
           </li>
@@ -107,12 +123,25 @@
           @if (item.data.daily?.precipitation_sum?.length) {
             <li class="list-group-item d-flex mb-2 justify-content-between p-3">
               <span><i class="bi bi-cloud-rain me-2"></i>Précipitations</span>
-              <span
-                >{{
-                  formatNumber(item.data.daily?.precipitation_sum[dayIndex || defaultDayIndex], 1)
-                }}
-                <span class="small">{{ item.data.daily_units?.precipitation_sum }}</span></span
+
+              <button
+                (click)="
+                  showHourlyPrecipitation(
+                    item.city,
+                    item.data.daily?.time[dayIndex || defaultDayIndex]
+                  )
+                "
+                class="btn btn-sm btn-outline-secondary"
+                title="Historique des températures"
               >
+                <span
+                  >{{
+                    formatNumber(item.data.daily?.precipitation_sum[dayIndex || defaultDayIndex], 1)
+                  }}
+
+                  <span class="small">{{ item.data.daily_units?.precipitation_sum }}</span></span
+                >
+              </button>
             </li>
 
             <li class="list-group-item d-flex mb-2 justify-content-between p-3">
@@ -139,14 +168,14 @@
 
             <li class="list-group-item d-flex mb-3 justify-content-between gap-2 p-4">
               <button
-                (click)="showPrecipitationHistory(item.city)"
+                (click)="showHistoryPrecipitation(item.city)"
                 class="btn btn-sm btn-outline-info"
                 title="Historique des précipitations"
               >
                 <i class="bi bi-graph-up"></i> Précipitations
               </button>
               <button
-                (click)="showTemperatureHistory(item.city)"
+                (click)="showHistoryTemperature(item.city)"
                 class="btn btn-sm btn-outline-danger"
                 title="Historique des températures"
               >
@@ -166,9 +195,9 @@
                   <thead>
                     <tr>
                       <th>Date</th>
-                      <th>mm</th>
-                      <th>nombre d'heures</th>
-                      <th>% probabilité</th>
+                      <th>total mm</th>
+                      <th>nombre <br />d'heures</th>
+                      <th>% <br />probabilité</th>
                     </tr>
                   </thead>
                   <tbody class="p-2">
@@ -203,22 +232,40 @@
   }
 
   <!-- Modale Historique Précipitations -->
-  <app-rain-history-modal
-    [showModal]="showHistoryModal"
-    [cityName]="selectedCityForHistory"
-    [historyData]="precipitationHistory"
-    [isLoading]="isLoadingPrecipitationHistory"
-    (modalClosed)="closeHistoryModal()"
+  <app-history-precipitation-modal
+    [showModal]="showHistoryPrecipitationModal"
+    [cityName]="selectedCityForModal"
+    [historyData]="historyPrecipitation"
+    [isLoading]="isLoadingHistoryPrecipitaion"
+    (modalClosed)="closeHistoryPrecipitationModal()"
   >
-  </app-rain-history-modal>
+  </app-history-precipitation-modal>
 
   <!-- Modale Historique Températures -->
-  <app-temperature-history-modal
-    [showModal]="showTemperatureHistoryModal"
-    [cityName]="selectedCityForHistory"
-    [historyData]="temperatureHistory"
-    [isLoading]="isLoadingTemperatureHistory"
-    (modalClosed)="closeTemperatureHistoryModal()"
+  <app-history-temperature-modal
+    [showModal]="showHistoryTemperatureModal"
+    [cityName]="selectedCityForModal"
+    [data]="historyTemperature"
+    [isLoading]="isLoadingHistoryTemperature"
+    (modalClosed)="closeHistoryTemperatureModal()"
   >
-  </app-temperature-history-modal>
+  </app-history-temperature-modal>
+
+  <app-hourly-precipitation-modal
+    [showModal]="showHourlyPrecipitationModal"
+    [cityName]="selectedCityForModal"
+    [data]="hourlyPrecipitation"
+    [isLoading]="isLoadingHourlyPrecipitation"
+    (modalClosed)="closeHourlyPrecipitationModal()"
+  >
+  </app-hourly-precipitation-modal>
+
+  <app-hourly-temperature-modal
+    [showModal]="showHourlyTemperatureModal"
+    [cityName]="selectedCityForModal"
+    [hourlyTemperature]="hourlyTemperature"
+    [isLoading]="isLoadingHourlyTemperature"
+    (modalClosed)="closeHourlyTemperatureModal()"
+  >
+  </app-hourly-temperature-modal>
 </div>

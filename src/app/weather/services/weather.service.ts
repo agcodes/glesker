@@ -57,7 +57,9 @@ export class WeatherService {
   // Ajouter une ville par son nom
   addCityByName(cityName: string, latitude: number, longitude: number): void {
     // Vérifier si la ville existe déjà
-    const cityExists = this.cities.some((c) => c.name.toLowerCase() === cityName.toLowerCase());
+    const cityExists: boolean = this.cities.some(
+      (c) => c.name.toLowerCase() === cityName.toLowerCase(),
+    );
 
     if (!cityExists) {
       this.cities = [...this.cities, { name: cityName, latitude, longitude }];
@@ -73,11 +75,7 @@ export class WeatherService {
   }
 
   // Obtenir l'historique des précipitations pour une ville spécifique
-  getCityPrecipitationHistory(
-    latitude: number,
-    longitude: number,
-    days: number = 30,
-  ): Observable<WeatherData> {
+  getCityPrecipitationHistory(latitude: number, longitude: number): Observable<WeatherData> {
     const params = {
       latitude,
       longitude,
@@ -91,11 +89,7 @@ export class WeatherService {
   }
 
   // Obtenir l'historique des précipitations pour une ville spécifique
-  getCityTemperatureHistory(
-    latitude: number,
-    longitude: number,
-    days: number = 30,
-  ): Observable<WeatherData> {
+  getCityTemperatureHistory(latitude: number, longitude: number): Observable<WeatherData> {
     const params = {
       latitude,
       longitude,
@@ -116,7 +110,7 @@ export class WeatherService {
         longitude: city.longitude,
         current_weather: true,
         past_days: 7,
-        hourly: 'precipitation,rain,showers,precipitation_probability',
+        forecast_days: 7,
         daily:
           'temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,precipitation_hours,precipitation_probability_max,weathercode,windspeed_10m_max',
         timezone: 'Europe/Paris',
@@ -127,6 +121,27 @@ export class WeatherService {
     });
 
     return forkJoin(requests);
+  }
+
+  getHourlyWeather(
+    latitude: number,
+    longitude: number,
+    startDate: string,
+    endDate: string,
+  ): Observable<WeatherData> {
+    const params = {
+      latitude,
+      longitude,
+      current_weather: false,
+      past_days: 0,
+      start_date: startDate,
+      end_date: endDate,
+      hourly:
+        'temperature_2m_max,temperature_2m_min,precipitation,rain,showers,precipitation_probability',
+      daily: '',
+      timezone: 'Europe/Paris',
+    };
+    return this.http.get<WeatherData>(this.apiUrl, { params });
   }
 
   // Récupérer la météo pour une ville spécifique
@@ -145,11 +160,6 @@ export class WeatherService {
   // Get all cities
   getCities(): City[] {
     return this.cities;
-  }
-
-  // Helper pour formater une date en string
-  private formatDateForApi(date: Date): string {
-    return date.toISOString().split('T')[0];
   }
 
   // Decode weather code to description

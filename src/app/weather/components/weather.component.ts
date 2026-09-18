@@ -172,6 +172,7 @@ export class WeatherComponent implements OnInit {
       .pipe(
         tap((data) => {
           this.dayIndexes = {};
+          //console.log(data);
           data.forEach((item) => {
             this.dayIndexes[item.city] = this.DEFAULT_DAY_INDEX;
           });

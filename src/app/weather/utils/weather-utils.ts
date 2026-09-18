@@ -17,14 +17,28 @@ export class WeatherUtils {
   // Formater la température avec arrondi à 0.1°C
   static formatTemperature(temp: number | undefined, unit: string): string {
     if (temp === undefined) return '';
-    return `${Math.round(temp * 10) / 10}`+unit;
+    return `${Math.round(temp * 10) / 10}` + unit;
   }
 
   // Obtenir la direction du vent à partir des degrés
   static getWindDirection(degrees: number): string {
     const directions = [
-      'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-      'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO',
+      'N',
+      'NNE',
+      'NE',
+      'ENE',
+      'E',
+      'ESE',
+      'SE',
+      'SSE',
+      'S',
+      'SSO',
+      'SO',
+      'OSO',
+      'O',
+      'ONO',
+      'NO',
+      'NNO',
     ];
     const index = Math.round(degrees / 22.5) % 16;
     return directions[index];
@@ -41,16 +55,35 @@ export class WeatherUtils {
   }
 
   // Calculer les précipitations cumulées pour l'historique
-  static calculateCumulativePrecipitation(daily: any): { date: string; precipitation: number; cumulative: number }[] {
-    if (!daily?.precipitation_sum || !daily?.time) return [];
+  static calculateCumulativePrecipitation(
+    data: any,
+  ): { date: string; precipitation: number; cumulative: number }[] {
+    if (!data?.precipitation || !data?.time) return [];
 
     let cumulative = 0;
-    return daily.time.map((date: string, index: number) => {
-      cumulative += daily.precipitation_sum[index];
+    return data.time.map((date: string, index: number) => {
+      cumulative += data.precipitation[index];
       return {
         date,
-        precipitation: daily.precipitation_sum[index],
-        cumulative: cumulative
+        precipitation: data.precipitation[index],
+        cumulative: cumulative,
+      };
+    });
+  }
+
+  // Calculer les précipitations cumulées pour l'historique
+  static calculateCumulativeHistoryPrecipitation(
+    data: any,
+  ): { date: string; precipitation: number; cumulative: number }[] {
+    if (!data?.precipitation_sum || !data?.time) return [];
+
+    let cumulative = 0;
+    return data.time.map((date: string, index: number) => {
+      cumulative += data.precipitation_sum[index];
+      return {
+        date,
+        precipitation: data.precipitation_sum[index],
+        cumulative: cumulative,
       };
     });
   }

@@ -2,13 +2,20 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angu
 import { WeatherService } from '../services/weather.service';
 import { CommonModule } from '@angular/common';
 import { WeatherUtils } from '../utils/weather-utils';
-import { RainHistoryModalComponent } from './rain-history-modal.component';
-import { TemperatureHistoryModalComponent } from './temperature-history-modal.component';
-
+import { HistoryPrecipitationModalComponent } from './history-precipitation-modal.component';
+import { HistoryTemperatureModalComponent } from './history-temperature-modal.component';
+import { HourlyTemperatureModalComponent } from './hourly-temperature-modal.component';
+import { HourlyPrecipitationModalComponent } from './hourly-precipitation-modal.component';
 @Component({
   selector: 'app-weather-card',
   standalone: true,
-  imports: [CommonModule, RainHistoryModalComponent, TemperatureHistoryModalComponent],
+  imports: [
+    CommonModule,
+    HistoryPrecipitationModalComponent,
+    HistoryTemperatureModalComponent,
+    HourlyTemperatureModalComponent,
+    HourlyPrecipitationModalComponent,
+  ],
   templateUrl: './weather-card.component.html',
   styleUrl: './weather-card.component.css',
 })
@@ -22,13 +29,20 @@ export class WeatherCardComponent {
   @Output() removeCity = new EventEmitter<string>();
   @Output() dayIndexChange = new EventEmitter<{ city: string; newIndex: number }>();
 
-  showHistoryModal: boolean = false;
-  showTemperatureHistoryModal: boolean = false;
-  isLoadingPrecipitationHistory: boolean = false;
-  isLoadingTemperatureHistory: boolean = false;
-  selectedCityForHistory: string = '';
-  precipitationHistory: { date: string; precipitation: number; cumulative: number }[] = [];
-  temperatureHistory: { date: string; temperature_min: number; temperature_max: number }[] = [];
+  selectedCityForModal: string = '';
+  showHistoryPrecipitationModal: boolean = false;
+  showHourlyPrecipitationModal: boolean = false;
+  showHourlyTemperatureModal: boolean = false;
+  showHistoryTemperatureModal: boolean = false;
+  isLoadingHistoryPrecipitaion: boolean = false;
+  isLoadingHourlyPrecipitation: boolean = false;
+  isLoadingHourlyTemperature: boolean = false;
+  isLoadingHistoryTemperature: boolean = false;
+
+  historyPrecipitation: { date: string; precipitation: number; cumulative: number }[] = [];
+  hourlyPrecipitation: { date: string; precipitation: number; cumulative: number }[] = [];
+  historyTemperature: { date: string; temperature_min: number; temperature_max: number }[] = [];
+  hourlyTemperature: { date: string; temperature_min: number; temperature_max: number }[] = [];
 
   constructor(
     public weatherService: WeatherService,
@@ -59,52 +73,114 @@ export class WeatherCardComponent {
     }
   }
 
-  showPrecipitationHistory(cityName: string): void {
+  showHourlyPrecipitation(cityName: string, date: string): void {
     const city = this.weatherService.cities.find((c) => c.name === cityName);
     if (city) {
-      this.selectedCityForHistory = cityName;
-      this.isLoadingPrecipitationHistory = true;
-      this.showHistoryModal = true;
+      this.selectedCityForModal = cityName;
+      this.isLoadingHourlyPrecipitation = true;
+      this.showHourlyPrecipitationModal = true;
       this.cdr.detectChanges();
 
-      this.weatherService.getCityPrecipitationHistory(city.latitude, city.longitude).subscribe({
+      this.weatherService.getHourlyWeather(city.latitude, city.longitude, date, date).subscribe({
         next: (data) => {
-          this.precipitationHistory = WeatherUtils.calculateCumulativePrecipitation(data.daily);
-          this.isLoadingPrecipitationHistory = false;
+          this.hourlyPrecipitation = WeatherUtils.calculateCumulativePrecipitation(data.hourly);
+          this.isLoadingHourlyPrecipitation = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error("Erreur lors de la récupération de l'historique:", err);
-          this.isLoadingPrecipitationHistory = false;
-          this.showHistoryModal = false;
+          console.error('Erreur lors de la récupération des données:', err);
+          this.isLoadingHistoryPrecipitaion = false;
+          this.showHourlyPrecipitationModal = false;
           this.cdr.detectChanges();
         },
       });
     }
   }
 
-  showTemperatureHistory(cityName: string): void {
+  showHistoryPrecipitation(cityName: string): void {
     const city = this.weatherService.cities.find((c) => c.name === cityName);
     if (city) {
-      this.selectedCityForHistory = cityName;
-      this.isLoadingTemperatureHistory = true;
-      this.showTemperatureHistoryModal = true;
+      this.selectedCityForModal = cityName;
+      this.isLoadingHistoryPrecipitaion = true;
+      this.showHistoryPrecipitationModal = true;
       this.cdr.detectChanges();
 
-      this.weatherService.getCityTemperatureHistory(city.latitude, city.longitude).subscribe({
+      this.weatherService.getCityPrecipitationHistory(city.latitude, city.longitude).subscribe({
         next: (data) => {
-          this.temperatureHistory = this.calculateTemperatureHistory(data.daily);
-          this.isLoadingTemperatureHistory = false;
+          this.historyPrecipitation = WeatherUtils.calculateCumulativeHistoryPrecipitation(
+            data.daily,
+          );
+          this.isLoadingHistoryPrecipitaion = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error("Erreur lors de la récupération de l'historique des températures:", err);
-          this.isLoadingTemperatureHistory = false;
-          this.showTemperatureHistoryModal = false;
+          console.error("Erreur lors de la récupération de l'historique:", err);
+          this.isLoadingHistoryPrecipitaion = false;
+          this.showHistoryPrecipitationModal = false;
           this.cdr.detectChanges();
         },
       });
     }
+  }
+
+  showHistoryTemperature(cityName: string): void {
+    const city = this.weatherService.cities.find((c) => c.name === cityName);
+    if (city) {
+      this.selectedCityForModal = cityName;
+      this.isLoadingHistoryTemperature = true;
+      this.showHistoryTemperatureModal = true;
+      this.cdr.detectChanges();
+
+      this.weatherService.getCityTemperatureHistory(city.latitude, city.longitude).subscribe({
+        next: (data) => {
+          this.historyTemperature = this.calculateTemperatureHistory(data.daily);
+          this.isLoadingHistoryTemperature = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error("Erreur lors de la récupération de l'historique des températures:", err);
+          this.isLoadingHistoryTemperature = false;
+          this.showHistoryTemperatureModal = false;
+          this.cdr.detectChanges();
+        },
+      });
+    }
+  }
+
+  showHourlyTemperature(cityName: string, date: string): void {
+    const city = this.weatherService.cities.find((c) => c.name === cityName);
+    if (city) {
+      this.selectedCityForModal = cityName;
+      this.isLoadingHourlyTemperature = true;
+      this.showHourlyTemperatureModal = true;
+      this.cdr.detectChanges();
+
+      this.weatherService.getHourlyWeather(city.latitude, city.longitude, date, date).subscribe({
+        next: (data) => {
+          this.hourlyTemperature = this.calculateHourlyTemperature(data.hourly);
+          this.isLoadingHourlyTemperature = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoadingHourlyTemperature = false;
+          this.showHourlyTemperatureModal = false;
+          this.cdr.detectChanges();
+          console.error('Erreur lors de la récupération des données:', err);
+        },
+      });
+    }
+  }
+
+  private calculateHourlyTemperature(
+    hourly: any,
+  ): { date: string; temperature_max: number; temperature_min: number }[] {
+    if (!hourly?.time || !hourly?.temperature_2m_min || !hourly?.temperature_2m_max) return [];
+
+    return hourly.time.map((date: string, index: number) => ({
+      date,
+      temperature_min: hourly.temperature_2m_min[index],
+      temperature_max: hourly.temperature_2m_max[index],
+    }));
   }
 
   private calculateTemperatureHistory(
@@ -124,17 +200,28 @@ export class WeatherCardComponent {
     return this.item.data.daily.precipitation_sum.reduce((a: number, b: number) => a + b, 0);
   }
 
-  closeHistoryModal(): void {
-    this.showHistoryModal = false;
-    this.precipitationHistory = [];
-    this.selectedCityForHistory = '';
-    this.isLoadingPrecipitationHistory = false;
+  closeHistoryPrecipitationModal(): void {
+    this.showHistoryPrecipitationModal = false;
+    this.historyPrecipitation = [];
+    this.selectedCityForModal = '';
+    this.isLoadingHistoryPrecipitaion = false;
   }
 
-  closeTemperatureHistoryModal(): void {
-    this.showTemperatureHistoryModal = false;
-    this.temperatureHistory = [];
-    this.selectedCityForHistory = '';
-    this.isLoadingTemperatureHistory = false;
+  closeHistoryTemperatureModal(): void {
+    this.showHistoryTemperatureModal = false;
+    this.historyTemperature = [];
+    this.selectedCityForModal = '';
+    this.isLoadingHistoryTemperature = false;
+  }
+
+  closeHourlyTemperatureModal(): void {
+    this.showHourlyTemperatureModal = false;
+    this.hourlyTemperature = [];
+    this.isLoadingHourlyTemperature = false;
+  }
+  closeHourlyPrecipitationModal(): void {
+    this.showHourlyPrecipitationModal = false;
+    this.hourlyPrecipitation = [];
+    this.isLoadingHistoryPrecipitaion = false;
   }
 }

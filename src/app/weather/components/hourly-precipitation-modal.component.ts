@@ -11,20 +11,20 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
+import { WeatherUtils } from '../utils/weather-utils';
 
 Chart.register(...registerables);
 
 @Component({
-  selector: 'app-temperature-hourly-modal',
+  selector: 'app-hourly-precipitation-modal',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './temperature-hourly-modal.component.html',
-  styleUrl: './temperature-hourly-modal.component.css',
+  templateUrl: './hourly-precipitation-modal.component.html',
+  styleUrl: './hourly-precipitation-modal.component.css',
 })
-export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges {
+export class HourlyPrecipitationModalComponent implements AfterViewInit, OnChanges {
   @Input() cityName: string = '';
-  @Input() hourlyTemperature: { date: string; temperature_max: number; temperature_min: number }[] =
-    [];
+  @Input() data: { date: string; precipitation: number; cumulative: number }[] = [];
   @Input() isLoading: boolean = false;
 
   @Output() modalClosed = new EventEmitter<void>();
@@ -34,7 +34,7 @@ export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges
   @Input()
   set showModal(value: boolean) {
     this._showModal = value;
-    if (value && this.hourlyTemperature.length > 0) {
+    if (value && this.data.length > 0) {
       setTimeout(() => this.createChart(), 0);
     }
   }
@@ -48,14 +48,13 @@ export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges
   constructor() {}
 
   ngAfterViewInit(): void {
-    if (this._showModal && this.hourlyTemperature.length > 0) {
+    if (this._showModal && this.data.length > 0) {
       this.createChart();
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this._showModal && changes['hourlyTemperature'] && this.hourlyTemperature.length > 0) {
-      console.log(this.hourlyTemperature);
+    if (this._showModal && changes['data'] && this.data.length > 0) {
       setTimeout(() => this.createChart(), 0);
     }
   }
@@ -64,10 +63,11 @@ export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges
     this.modalClosed.emit();
   }
 
+  // Méthode de formatage délégée à WeatherUtils
+  formatNumber = WeatherUtils.formatNumber;
+
   private createChart(): void {
-    console.log('create chart');
-    console.log(this.hourlyTemperature);
-    if (!this.chartCanvas || !this.hourlyTemperature.length) {
+    if (!this.chartCanvas || !this.data.length) {
       if (this.chart) {
         this.chart.destroy();
         this.chart = null;
@@ -86,27 +86,27 @@ export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: this.hourlyTemperature.map((d) => d.date),
+        labels: this.data.map((d) => d.date),
         datasets: [
           {
-            label: 'temp. max',
-            data: this.hourlyTemperature.map((d) => d.temperature_max),
-            borderColor: '#e81a1a',
-            backgroundColor: 'rgba(232, 26, 26, 0.1)',
-            tension: 0.1,
-            borderWidth: 2,
-            pointRadius: 3,
-            pointBackgroundColor: '#e81a1a',
-          },
-          {
-            label: 'temp. min',
-            data: this.hourlyTemperature.map((d) => d.temperature_min),
+            label: 'Précipitations par heure (mm)',
+            data: this.data.map((d) => d.precipitation),
             borderColor: '#1a73e8',
             backgroundColor: 'rgba(26, 115, 232, 0.1)',
             tension: 0.1,
             borderWidth: 2,
             pointRadius: 3,
             pointBackgroundColor: '#1a73e8',
+          },
+          {
+            label: 'Cumulé (mm)',
+            data: this.data.map((d) => d.cumulative),
+            borderColor: '#0f9d58',
+            backgroundColor: 'rgba(15, 157, 88, 0.1)',
+            tension: 0.1,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#0f9d58',
           },
         ],
       },
@@ -125,7 +125,7 @@ export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges
           tooltip: {
             callbacks: {
               label: (context) => {
-                return `${context.dataset.label}: ${context.raw}`;
+                return `${context.dataset.label}: ${context.raw} mm`;
               },
             },
           },
@@ -140,15 +140,19 @@ export class TemperatureHourlyModalComponent implements AfterViewInit, OnChanges
               maxRotation: 190,
               minRotation: 0,
               callback: (value: string | number) => {
-                return String(value).split('T')[1].split(':')[0];
-              }
+                const str = String(value);
+                if (str.includes('T')) {
+                  return str.split('T')[1].split(':')[0];
+                }
+                return str;
+              },
             },
           },
           y: {
-            beginAtZero: false,
+            beginAtZero: true,
             title: {
               display: true,
-              text: 'Température',
+              text: 'Précipitations (mm)',
             },
           },
         },
