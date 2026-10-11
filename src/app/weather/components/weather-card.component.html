@@ -121,111 +121,116 @@
           </li>
 
           @if (item.data.daily?.precipitation_sum?.length) {
-            <li class="list-group-item d-flex mb-2 justify-content-between p-3">
-              <span><i class="bi bi-cloud-rain me-2"></i>Précipitations</span>
+            <li class="list-group-item mb-2 p-3">
+              <div class="d-flex justify-content-between">
+                <span><i class="bi bi-cloud-rain me-2"></i>Précipitations</span>
 
-              <button
-                (click)="
-                  showHourlyPrecipitation(
-                    item.city,
-                    item.data.daily?.time[dayIndex || defaultDayIndex]
-                  )
-                "
-                class="btn btn-sm btn-outline-secondary"
-                title="Historique des températures"
-              >
+                <button
+                  (click)="
+                    showHourlyPrecipitation(
+                      item.city,
+                      item.data.daily?.time[dayIndex || defaultDayIndex]
+                    )
+                  "
+                  class="btn btn-sm btn-outline-secondary"
+                  title="Historique des températures"
+                >
+                  <span
+                    >{{
+                      formatNumber(
+                        item.data.daily?.precipitation_sum[dayIndex || defaultDayIndex],
+                        1
+                      )
+                    }}
+
+                    <span class="small">{{ item.data.daily_units?.precipitation_sum }}</span></span
+                  >
+                </button>
+              </div>
+
+              @if (item.data.daily?.precipitation_probability_max?.length) {
+                <div class="small mb-1">
+                  <span>Probabilité : </span>
+
+                  <span
+                    >{{
+                      formatNumber(
+                        item.data.daily?.precipitation_probability_max[dayIndex || defaultDayIndex],
+                        0
+                      )
+                    }}<span class="">%</span></span
+                  >
+                </div>
+              }
+
+              <div class="small">
+                <span> Averses : </span>
+
                 <span
-                  >{{
-                    formatNumber(item.data.daily?.precipitation_sum[dayIndex || defaultDayIndex], 1)
-                  }}
-
-                  <span class="small">{{ item.data.daily_units?.precipitation_sum }}</span></span
+                  >{{ formatNumber(item.data.daily?.showers_sum[dayIndex || defaultDayIndex], 1) }}
+                  <span class="">{{ item.data.daily_units?.showers_sum }}</span></span
                 >
-              </button>
-            </li>
-
-            <li class="list-group-item d-flex mb-2 justify-content-between p-3">
-              <span><i class="bi bi-cloud-rain me-2"></i>Averses</span>
-              <span
-                >{{ formatNumber(item.data.daily?.showers_sum[dayIndex || defaultDayIndex], 1) }}
-                <span class="small">{{ item.data.daily_units?.showers_sum }}</span></span
-              >
+              </div>
             </li>
           }
 
-          @if (item.data.daily?.precipitation_probability_max?.length) {
-            <li class="list-group-item d-flex mb-2 justify-content-between p-3">
-              <span><i class="bi bi-percent me-2"></i>Probabilité de précipitations</span>
-              <span
-                >{{
-                  formatNumber(
-                    item.data.daily?.precipitation_probability_max[dayIndex || defaultDayIndex],
-                    0
-                  )
-                }}<span class="small">%</span></span
-              >
-            </li>
+          <li class="list-group-item d-flex mb-3 justify-content-between gap-2 p-4">
+            <button
+              (click)="showHistoryPrecipitation(item.city)"
+              class="btn btn-sm btn-outline-info"
+              title="Historique des précipitations"
+            >
+              <i class="bi bi-graph-up"></i> Précipitations
+            </button>
+            <button
+              (click)="showHistoryTemperature(item.city)"
+              class="btn btn-sm btn-outline-danger"
+              title="Historique des températures"
+            >
+              <i class="bi bi-thermometer-half"></i> Températures
+            </button>
+          </li>
 
-            <li class="list-group-item d-flex mb-3 justify-content-between gap-2 p-4">
-              <button
-                (click)="showHistoryPrecipitation(item.city)"
-                class="btn btn-sm btn-outline-info"
-                title="Historique des précipitations"
-              >
-                <i class="bi bi-graph-up"></i> Précipitations
-              </button>
-              <button
-                (click)="showHistoryTemperature(item.city)"
-                class="btn btn-sm btn-outline-danger"
-                title="Historique des températures"
-              >
-                <i class="bi bi-thermometer-half"></i> Températures
-              </button>
-            </li>
+          <li class="list-group-item mb-3 p-3">
+            <div class="mb-3">
+              <span class=""><i class="bi bi-calendar-range me-2"></i>Précipitations par jour</span>
+            </div>
 
-            <li class="list-group-item mb-3 p-3">
-              <div class="mb-3">
-                <span class=""
-                  ><i class="bi bi-calendar-range me-2"></i>Précipitations par jour</span
-                >
-              </div>
-
-              <div class="table-responsive mt-2">
-                <table class="table p-2 table-md table-bordered mb-0">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>total mm</th>
-                      <th>nombre <br />d'heures</th>
-                      <th>% <br />probabilité</th>
-                    </tr>
-                  </thead>
-                  <tbody class="p-2">
-                    <tr
-                      *ngFor="let day of item.data.daily?.time; let i = index"
-                      [class.today-row]="day === todayDate"
-                    >
-                      <td>{{ day | date: 'dd/MM' }}</td>
-                      <td>{{ formatNumber(item.data.daily?.precipitation_sum[i], 1) }}</td>
-                      <td>{{ formatNumber(item.data.daily?.precipitation_hours[i], 0) }}</td>
-                      <td>
-                        {{ formatNumber(item.data.daily?.precipitation_probability_max[i], 0) }}
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot class="p-2">
-                    <tr class="fw-bold">
-                      <td>Total</td>
-                      <td [class.text-danger]="getTotalPrecipitation() < 2">
-                        {{ formatNumber(getTotalPrecipitation(), 1) }}
-                      </td>
-                      <td colspan="2"></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </li>
-          }
+            <div class="table-responsive mt-2">
+              <table class="table p-2 table-md table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>total mm</th>
+                    <th>nombre <br />d'heures</th>
+                    <th>% <br />probabilité</th>
+                  </tr>
+                </thead>
+                <tbody class="p-2">
+                  <tr
+                    *ngFor="let day of item.data.daily?.time; let i = index"
+                    [class.today-row]="day === todayDate"
+                  >
+                    <td>{{ day | date: 'dd/MM' }}</td>
+                    <td>{{ formatNumber(item.data.daily?.precipitation_sum[i], 1) }}</td>
+                    <td>{{ formatNumber(item.data.daily?.precipitation_hours[i], 0) }}</td>
+                    <td>
+                      {{ formatNumber(item.data.daily?.precipitation_probability_max[i], 0) }}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="p-2">
+                  <tr class="fw-bold">
+                    <td>Total</td>
+                    <td [class.text-danger]="getTotalPrecipitation() < 2">
+                      {{ formatNumber(getTotalPrecipitation(), 1) }}
+                    </td>
+                    <td colspan="2"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
